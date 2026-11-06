@@ -1,0 +1,21 @@
+{
+  "name": "svelte-datetimerange-picker-storybook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Storybook for the svelte-datetimerange-picker packages.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "storybook build",
+    "dev": "storybook dev -p 6006"
+  },
+  "devDependencies": {
+    "@storybook/addon-docs": "^10.6.6",
+    "@storybook/addon-svelte-csf": "^5.1.6",
+    "@storybook/svelte-vite": "^10.6.6",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "storybook": "^10.6.6",
+    "svelte": "^5.57.3",
+    "vite": "^8.3.6"
+  }
+}

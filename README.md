@@ -34,7 +34,8 @@ npm run dev     # watches the packages and starts the test page
 ```
 
 - [`test`](test) is a page with controls for trying out every option of the picker.
-- [`sample`](sample) is a minimal usage example that installs the published package.
+- [`sample`](sample) is a minimal usage example built with [Astro](https://astro.build). Run `npm install` at the repo root first (it resolves the picker through the workspace), then `cd sample && npm install && npm run dev`.
+- [`storybook`](storybook) is a [Storybook](https://storybook.js.org) with stories for the six component packages. It is not part of the workspaces: `cd storybook && npm install && npm run dev` (port 6006).
 
 ## Contributing
 
