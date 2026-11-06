@@ -1,0 +1,24 @@
+{
+  "name": "@wojtekmaj/react-datetimerange-picker-monorepo",
+  "version": "1.0.0",
+  "description": "@wojtekmaj/react-datetimerange-picker monorepo",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "test"
+  ],
+  "scripts": {
+    "build": "yarn workspace @wojtekmaj/react-datetimerange-picker build",
+    "dev": "yarn workspace @wojtekmaj/react-datetimerange-picker watch & yarn workspace test dev",
+    "format": "yarn workspaces foreach --all run format",
+    "lint": "yarn workspaces foreach --all run lint",
+    "postinstall": "husky",
+    "test": "yarn workspaces foreach --all run test",
+    "tsc": "yarn workspaces foreach --all run tsc",
+    "unit": "yarn workspaces foreach --all run unit"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0"
+  },
+  "packageManager": "yarn@4.17.1"
+}
