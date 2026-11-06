@@ -1,13 +1,5 @@
 {
-  "compilerOptions": {
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "module": "preserve",
-    "moduleDetection": "force",
-    "noEmit": true,
-    "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true,
-    "target": "esnext",
-    "verbatimModuleSyntax": true
-  }
+  "extends": "../tsconfig.base.json",
+  "include": ["*.ts", "*.svelte", "shared/**/*.ts"],
+  "exclude": ["dist"]
 }

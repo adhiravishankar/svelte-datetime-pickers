@@ -1,7 +1,7 @@
 {
   "name": "test",
   "version": "2.0.0",
-  "description": "A test page for React-DateTimeRange-Picker.",
+  "description": "A test page for svelte-datetimerange-picker.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,24 +11,19 @@
     "lint": "biome lint",
     "preview": "vite preview",
     "test": "yarn lint && yarn tsc && yarn format",
-    "tsc": "tsc"
-  },
-  "author": {
-    "name": "Wojciech Maj",
-    "email": "kontakt@wojtekmaj.pl"
+    "tsc": "svelte-check --tsconfig ./tsconfig.json"
   },
   "license": "MIT",
   "dependencies": {
-    "@wojtekmaj/react-datetimerange-picker": "workspace:packages/react-datetimerange-picker",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "svelte": "^5.57.3",
+    "svelte-datetimerange-picker": "workspace:packages/svelte-datetimerange-picker"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.8",
-    "@types/react": "^19.2.0",
-    "@vitejs/plugin-react": "^6.0.2",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@wojtekmaj/date-utils": "^2.0.2",
-    "typescript": "^7.0.2",
+    "svelte-check": "^4.7.0",
+    "typescript": "^5.9.0",
     "vite": "^8.3.5"
   }
 }

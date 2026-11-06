@@ -1,15 +1,15 @@
 {
-  "name": "@wojtekmaj/react-datetimerange-picker-monorepo",
+  "name": "svelte-datetimerange-picker-monorepo",
   "version": "1.0.0",
-  "description": "@wojtekmaj/react-datetimerange-picker monorepo",
+  "description": "svelte-datetimerange-picker monorepo",
   "type": "module",
   "workspaces": [
     "packages/*",
     "test"
   ],
   "scripts": {
-    "build": "yarn workspace @wojtekmaj/react-datetimerange-picker build",
-    "dev": "yarn workspace @wojtekmaj/react-datetimerange-picker watch & yarn workspace test dev",
+    "build": "yarn workspaces foreach --all --topological --exclude test run build",
+    "dev": "yarn workspaces foreach --all --parallel --interlaced --exclude test run watch & yarn workspace test dev",
     "format": "yarn workspaces foreach --all run format",
     "lint": "yarn workspaces foreach --all run lint",
     "postinstall": "husky",

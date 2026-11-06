@@ -6,6 +6,7 @@
       "!**/.yarn",
       "!**/coverage",
       "!**/dist",
+      "!**/.svelte-kit",
       "!**/.pnp.cjs",
       "!**/.pnp.loader.mjs"
     ]
@@ -19,7 +20,7 @@
             "groups": [
               { "type": false, "source": ":NODE:" },
               { "type": false, "source": ["vitest", "vitest/**", "@vitest/**", "vitest-*"] },
-              { "type": false, "source": ["react", "react-dom", "react-dom/**", "react-native"] },
+              { "type": false, "source": ["svelte", "svelte/**", "@sveltejs/**"] },
               { "type": false, "source": [":PACKAGE:"] },
               ":BLANK_LINE:",
               {
@@ -85,6 +86,11 @@
       }
     }
   },
+  "html": {
+    "formatter": {
+      "indentScriptAndStyle": true
+    }
+  },
   "css": {
     "formatter": {
       "quoteStyle": "single"
@@ -96,6 +102,21 @@
     }
   },
   "overrides": [
+    {
+      "includes": ["**/*.svelte"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
+          },
+          "style": {
+            "useImportType": "off",
+            "useConst": "off"
+          }
+        }
+      }
+    },
     {
       "includes": ["**/vite.config.ts"],
       "linter": {

@@ -115,7 +115,10 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: yarn workspace @wojtekmaj/react-datetimerange-picker playwright install chromium-headless-shell
+        run: yarn workspace svelte-datetimerange-picker playwright install chromium-headless-shell
+
+      - name: Build packages
+        run: yarn build
 
       - name: Run tests
         run: yarn unit

@@ -36,10 +36,22 @@ jobs:
 
       - name: Publish with latest tag
         if: github.event.release.prerelease == false
-        run: yarn npm publish --tag latest
-        working-directory: packages/react-datetimerange-picker
+        run: |
+          (cd packages/svelte-fit-action && yarn npm publish --tag latest)
+          (cd packages/svelte-analog-clock && yarn npm publish --tag latest)
+          (cd packages/svelte-range-calendar && yarn npm publish --tag latest)
+          (cd packages/svelte-date-input && yarn npm publish --tag latest)
+          (cd packages/svelte-time-input && yarn npm publish --tag latest)
+          (cd packages/svelte-datetime-input && yarn npm publish --tag latest)
+          (cd packages/svelte-datetimerange-picker && yarn npm publish --tag latest)
 
       - name: Publish with next tag
         if: github.event.release.prerelease == true
-        run: yarn npm publish --tag next
-        working-directory: packages/react-datetimerange-picker
+        run: |
+          (cd packages/svelte-fit-action && yarn npm publish --tag next)
+          (cd packages/svelte-analog-clock && yarn npm publish --tag next)
+          (cd packages/svelte-range-calendar && yarn npm publish --tag next)
+          (cd packages/svelte-date-input && yarn npm publish --tag next)
+          (cd packages/svelte-time-input && yarn npm publish --tag next)
+          (cd packages/svelte-datetime-input && yarn npm publish --tag next)
+          (cd packages/svelte-datetimerange-picker && yarn npm publish --tag next)
