@@ -1,15 +1,18 @@
 ---
-import Sample from '../components/Sample.svelte';
+import CalendarDemo from '../components/CalendarDemo.svelte';
+import ClockDemo from '../components/ClockDemo.svelte';
+import DateInputDemo from '../components/DateInputDemo.svelte';
+import DateTimeInputDemo from '../components/DateTimeInputDemo.svelte';
+import PickerDemo from '../components/PickerDemo.svelte';
+import TimeInputDemo from '../components/TimeInputDemo.svelte';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<!doctype html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>svelte-datetimerange-picker sample page</title>
-  </head>
-  <body>
-    <Sample client:load />
-  </body>
-</html>
+<Layout>
+  <PickerDemo client:load />
+  <DateTimeInputDemo client:load />
+  <DateInputDemo client:load />
+  <TimeInputDemo client:load />
+  <CalendarDemo client:load />
+  <ClockDemo client:load />
+</Layout>

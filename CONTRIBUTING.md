@@ -6,17 +6,18 @@ Thanks for your interest in contributing! This document explains how to set up t
 
 This is an npm workspaces monorepo.
 
-| Path                                   | What it is                                                                   |
-| -------------------------------------- | ---------------------------------------------------------------------------- |
-| `packages/svelte-datetimerange-picker` | The datetime range picker.                                                   |
-| `packages/svelte-datetime-input`       | Datetime input fields.                                                       |
-| `packages/svelte-time-input`           | Time input fields.                                                           |
-| `packages/svelte-date-input`           | Date input fields, and the segmented-input engine the other inputs share.    |
-| `packages/svelte-range-calendar`       | Calendar with range selection.                                               |
-| `packages/svelte-analog-clock`         | Analog clock.                                                                |
-| `packages/svelte-fit-action`           | `fit` and `portal` Svelte actions.                                           |
-| `test`                                 | Test page with controls for every option of the picker.                      |
-| `sample`                               | Minimal usage example. It installs the published package, not the workspace. |
+| Path                                   | What it is                                                                |
+| -------------------------------------- | ------------------------------------------------------------------------- |
+| `packages/svelte-datetimerange-picker` | The datetime range picker.                                                |
+| `packages/svelte-datetime-input`       | Datetime input fields.                                                    |
+| `packages/svelte-time-input`           | Time input fields.                                                        |
+| `packages/svelte-date-input`           | Date input fields, and the segmented-input engine the other inputs share. |
+| `packages/svelte-range-calendar`       | Calendar with range selection.                                            |
+| `packages/svelte-analog-clock`         | Analog clock.                                                             |
+| `packages/svelte-fit-action`           | `fit` and `portal` Svelte actions.                                        |
+| `test`                                 | Test page with controls for every option of the picker.                   |
+| `sample`                               | Minimal Astro usage example. Not a workspace; has its own `npm install`.  |
+| `storybook`                            | Storybook with stories for the six component packages. Not a workspace.   |
 
 Dependencies between packages are linked through the workspace, so a package must be built before the packages that use it can be tested or type-checked.
 
@@ -48,6 +49,16 @@ Run a command in a single package with `--workspace`, for example:
 ```sh
 npm run unit --workspace svelte-range-calendar
 ```
+
+### Storybook
+
+```sh
+cd storybook
+npm install   # once
+npm run dev   # http://localhost:6006
+```
+
+Stories live in `storybook/stories/*.stories.svelte`, one file per component. Packages are resolved from their `src`, so there is no need to build first and changes show up live. Storybook has its own install, outside the workspaces, because it conflicts with the pinned `vite-plus` at the repo root. `svelte-fit-action` has no stories since it is not a component.
 
 ### Commands
 

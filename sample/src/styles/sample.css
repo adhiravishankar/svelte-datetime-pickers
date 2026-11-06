@@ -46,3 +46,25 @@ body {
   flex-grow: 100;
   align-items: stretch;
 }
+
+.Sample__section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 10px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.Sample__section h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.Sample__section output {
+  font-family: Consolas, monospace;
+  font-size: 0.8rem;
+  color: #555;
+}
