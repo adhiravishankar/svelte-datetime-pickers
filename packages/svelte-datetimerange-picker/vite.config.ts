@@ -1,10 +1,8 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import { playwright } from '@vitest/browser-playwright';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite-plus';
+import { playwright } from 'vite-plus/test/browser-playwright';
 
-import type { ViteUserConfig } from 'vitest/config';
-
-const config: ViteUserConfig = defineConfig({
+export default defineConfig({
   plugins: [svelte()],
   test: {
     include: ['src/**/*.spec.ts'],
@@ -17,5 +15,3 @@ const config: ViteUserConfig = defineConfig({
     watch: false,
   },
 });
-
-export default config;

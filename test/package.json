@@ -2,14 +2,18 @@
   "name": "test",
   "version": "2.0.0",
   "description": "A test page for svelte-datetimerange-picker.",
+  "author": {
+    "name": "Adhi Ravishankar",
+    "email": "adhiravishankar@gmail.com"
+  },
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
+    "build": "vp build",
+    "dev": "vp dev",
     "format": "biome format",
     "lint": "biome lint",
-    "preview": "vite preview",
+    "preview": "vp preview",
     "test": "yarn lint && yarn tsc && yarn format",
     "tsc": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -19,11 +23,12 @@
     "svelte-datetimerange-picker": "workspace:packages/svelte-datetimerange-picker"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.8",
+    "@biomejs/biome": "2.6.4",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@wojtekmaj/date-utils": "^2.0.2",
-    "svelte-check": "^4.7.0",
-    "typescript": "^5.9.0",
-    "vite": "^8.3.5"
+    "svelte-check": "^4.7.7",
+    "typescript": "^6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vite-plus": "1.4.0"
   }
 }

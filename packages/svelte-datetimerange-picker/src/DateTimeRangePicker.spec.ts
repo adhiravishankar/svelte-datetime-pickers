@@ -1,11 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
-import { page, userEvent } from 'vitest/browser';
+import { describe, expect, it, vi } from 'vite-plus/test';
+import { page, userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-svelte';
 import { createRawSnippet } from 'svelte';
 
 import DateTimeRangePicker from './DateTimeRangePicker.svelte';
 
-import type { Locator } from 'vitest/browser';
+import type { Locator } from 'vite-plus/test/browser';
 
 async function waitForElementToBeRemovedOrHidden(callback: () => HTMLElement | null) {
   const element = callback();

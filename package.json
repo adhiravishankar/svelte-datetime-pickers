@@ -2,6 +2,10 @@
   "name": "svelte-datetimerange-picker-monorepo",
   "version": "1.0.0",
   "description": "svelte-datetimerange-picker monorepo",
+  "author": {
+    "name": "Adhi Ravishankar",
+    "email": "adhiravishankar@gmail.com"
+  },
   "type": "module",
   "workspaces": [
     "packages/*",
@@ -18,7 +22,12 @@
     "unit": "yarn workspaces foreach --all run unit"
   },
   "devDependencies": {
-    "husky": "^9.0.0"
+    "husky": "^9.1.7",
+    "vite-plus": "1.4.0"
   },
-  "packageManager": "yarn@4.17.1"
+  "packageManager": "yarn@4.17.1",
+  "resolutions": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vitest": "5.0.5"
+  }
 }

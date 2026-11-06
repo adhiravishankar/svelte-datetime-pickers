@@ -21,12 +21,12 @@ Svelte actions for popups. Svelte port of [React-Fit](https://github.com/wojtekm
 
 Positions an element absolutely next to its offset parent: below and aligned to the start by default. When the element would overflow the viewport, it flips above and/or aligns to the end instead.
 
-| Option      | Description                                                                         | Default    |
-| ----------- | ----------------------------------------------------------------------------------- | ---------- |
-| `enabled`   | When `false`, the positioning styles set by the action are removed.                 | `true`     |
-| `mainAxis`  | `"y"` places the element below/above, `"x"` places it to the right/left.            | `"y"`      |
-| `spacing`   | Minimum distance, in pixels, to keep from the edge of the container.                | `8`        |
-| `container` | Element to fit in.                                                                  | viewport   |
+| Option      | Description                                                              | Default  |
+| ----------- | ------------------------------------------------------------------------ | -------- |
+| `enabled`   | When `false`, the positioning styles set by the action are removed.      | `true`   |
+| `mainAxis`  | `"y"` places the element below/above, `"x"` places it to the right/left. | `"y"`    |
+| `spacing`   | Minimum distance, in pixels, to keep from the edge of the container.     | `8`      |
+| `container` | Element to fit in.                                                       | viewport |
 
 ### `portal`
 
