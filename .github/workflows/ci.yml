@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["*"]
+    branches: ['*']
   pull_request:
     branches: [main]
 
@@ -18,11 +18,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
 
-      - name: Run tests
-        run: biome lint
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: true
+
+      - name: Run linting
+        run: npm run lint
 
   typescript:
     name: Type checking
@@ -32,34 +40,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Cache Yarn cache
-        uses: actions/cache@v5
-        env:
-          cache-name: yarn-cache
-        with:
-          path: ~/.yarn/berry/cache
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}
-
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
-
-      - name: Install Corepack
-        run: npm install -g corepack
+          node-version: '24'
+          cache: npm
 
       - name: Install dependencies
-        run: yarn --immutable
+        run: npm ci
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: true
 
-      - name: Build package
-        run: yarn build
+      - name: Build packages
+        run: npm run build
 
       - name: Run type checking
-        run: yarn tsc
+        run: npm run tsc
 
   format:
     name: Formatting
@@ -69,11 +65,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: true
 
       - name: Run formatting
-        run: biome format
+        run: npm run format
 
   unit:
     name: Unit tests
@@ -83,16 +87,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Cache Yarn cache
-        uses: actions/cache@v5
-        env:
-          cache-name: yarn-cache
-        with:
-          path: ~/.yarn/berry/cache
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}
-
       - name: Cache ~/.cache/ms-playwright
         id: playwright-cache
         uses: actions/cache@v5
@@ -100,25 +94,23 @@ jobs:
           cache-name: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
-
-      - name: Install Corepack
-        run: npm install -g corepack
+          node-version: '24'
+          cache: npm
 
       - name: Install dependencies
-        run: yarn --immutable
+        run: npm ci
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: yarn workspace svelte-datetimerange-picker playwright install chromium-headless-shell
+        run: npm exec --workspace svelte-datetimerange-picker -- playwright install chromium-headless-shell
 
       - name: Build packages
-        run: yarn build
+        run: npm run build
 
       - name: Run tests
-        run: yarn unit
+        run: npm run unit

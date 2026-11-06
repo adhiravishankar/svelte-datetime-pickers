@@ -8,7 +8,7 @@ A datetime range picker for your Svelte 5 app.
 
 ## tl;dr
 
-- Install by executing `npm install svelte-datetimerange-picker` or `yarn add svelte-datetimerange-picker`.
+- Install by executing `npm install svelte-datetimerange-picker`.
 - Import by adding `import DateTimeRangePicker from 'svelte-datetimerange-picker'`.
 - Use by adding `<DateTimeRangePicker />`. Use the `onChange` prop for getting new values.
 
@@ -29,7 +29,7 @@ Your project needs to use Svelte 5 or later. The picker relies on modern web tec
 
 ### Installation
 
-Add svelte-datetimerange-picker to your project by executing `npm install svelte-datetimerange-picker` or `yarn add svelte-datetimerange-picker`.
+Add svelte-datetimerange-picker to your project by executing `npm install svelte-datetimerange-picker`.
 
 ### Usage
 

@@ -6,28 +6,35 @@
     "name": "Adhi Ravishankar",
     "email": "adhiravishankar@gmail.com"
   },
-  "type": "module",
   "workspaces": [
-    "packages/*",
+    "packages/svelte-fit-action",
+    "packages/svelte-analog-clock",
+    "packages/svelte-range-calendar",
+    "packages/svelte-date-input",
+    "packages/svelte-time-input",
+    "packages/svelte-datetime-input",
+    "packages/svelte-datetimerange-picker",
     "test"
   ],
+  "type": "module",
   "scripts": {
-    "build": "yarn workspaces foreach --all --topological --exclude test run build",
-    "dev": "yarn workspaces foreach --all --parallel --interlaced --exclude test run watch & yarn workspace test dev",
-    "format": "yarn workspaces foreach --all run format",
-    "lint": "yarn workspaces foreach --all run lint",
+    "build": "npm run build --workspaces --if-present",
+    "dev": "concurrently --kill-others-on-fail \"npm run watch --workspace svelte-fit-action\" \"npm run watch --workspace svelte-analog-clock\" \"npm run watch --workspace svelte-range-calendar\" \"npm run watch --workspace svelte-date-input\" \"npm run watch --workspace svelte-time-input\" \"npm run watch --workspace svelte-datetime-input\" \"npm run watch --workspace svelte-datetimerange-picker\" \"npm run dev --workspace test\"",
+    "format": "vp fmt --check",
+    "lint": "vp lint",
     "postinstall": "husky",
-    "test": "yarn workspaces foreach --all run test",
-    "tsc": "yarn workspaces foreach --all run tsc",
-    "unit": "yarn workspaces foreach --all run unit"
+    "test": "npm run test --workspaces --if-present",
+    "tsc": "npm run tsc --workspaces --if-present",
+    "unit": "npm run unit --workspaces --if-present"
   },
   "devDependencies": {
+    "concurrently": "^9.2.0",
     "husky": "^9.1.7",
     "vite-plus": "1.4.0"
   },
-  "packageManager": "yarn@4.17.1",
-  "resolutions": {
+  "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
     "vitest": "5.0.5"
-  }
+  },
+  "packageManager": "npm@12.2.1"
 }

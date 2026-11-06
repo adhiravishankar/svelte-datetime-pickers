@@ -1,1 +1,1 @@
-yarn format --staged --no-errors-on-unmatched --write
+npx vp staged

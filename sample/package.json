@@ -1,19 +1,19 @@
 {
   "name": "svelte-datetimerange-picker-sample-page",
   "version": "3.0.0",
+  "private": true,
   "description": "A sample page for svelte-datetimerange-picker.",
+  "license": "MIT",
   "author": {
     "name": "Adhi Ravishankar",
     "email": "adhiravishankar@gmail.com"
   },
-  "private": true,
   "type": "module",
   "scripts": {
     "build": "vp build",
     "dev": "vp dev",
     "preview": "vp preview"
   },
-  "license": "MIT",
   "dependencies": {
     "svelte": "^5.57.3",
     "svelte-datetimerange-picker": "latest"
@@ -23,6 +23,5 @@
     "typescript": "^6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
     "vite-plus": "1.4.0"
-  },
-  "packageManager": "yarn@4.17.1"
+  }
 }

@@ -18,20 +18,27 @@ This is a Svelte port of [React-DateTimeRange-Picker](https://github.com/wojtekm
 
 ## Development
 
-The repo uses TypeScript 6 and [Vite+](https://viteplus.dev): `vp test` runs the tests, and `vp dev` / `vp build` run the test page. Packages are built with `@sveltejs/package`. Linting and formatting stay on Biome, because Oxlint and Oxfmt (used by `vp check`) don't cover `.svelte` files.
+The repo uses TypeScript 6 and [Vite+](https://viteplus.dev): `vp test` runs the tests, `vp dev` / `vp build` run the test page, and `vp lint` / `vp fmt` (Oxlint and Oxfmt) lint and format the code. Packages are built with `@sveltejs/package`.
+
+**Svelte files are not auto-formatted:** Oxfmt does not support `.svelte` files yet, so only their `<script>` blocks are linted (by Oxlint) and the files are otherwise formatted by hand.
 
 ```sh
-yarn install
-yarn build   # builds every package in dependency order
-yarn unit    # runs unit tests in Chromium (run `yarn workspace svelte-datetimerange-picker playwright install chromium-headless-shell` once)
-yarn tsc     # type-checks with svelte-check
-yarn lint
-yarn format
-yarn dev     # watches the packages and starts the test page
+npm install
+npm run build   # builds every package in dependency order
+npm test         # runs lint, type checks, format checks and unit tests
+npm run unit     # runs unit tests in Chromium (run `npm exec --workspace svelte-datetimerange-picker -- playwright install chromium-headless-shell` once)
+npm run tsc      # type-checks with svelte-check
+npm run lint
+npm run format
+npm run dev     # watches the packages and starts the test page
 ```
 
 - [`test`](test) is a page with controls for trying out every option of the picker.
 - [`sample`](sample) is a minimal usage example that installs the published package.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

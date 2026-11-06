@@ -2,13 +2,29 @@
   "name": "svelte-analog-clock",
   "version": "0.1.0",
   "description": "An analog clock for your Svelte app.",
+  "keywords": [
+    "analog-clock",
+    "clock",
+    "svelte",
+    "time"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Adhi Ravishankar",
+    "email": "adhiravishankar@gmail.com"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*",
+    "!**/*.spec.*"
+  ],
   "type": "module",
   "sideEffects": [
     "*.css",
     "*.svelte"
   ],
-  "svelte": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "svelte": "./dist/index.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,33 +33,22 @@
     },
     "./dist/*.css": "./dist/*.css"
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "svelte-package --input src --output dist",
     "clean": "node -e \"fs.rmSync('./dist', { recursive: true, force: true })\"",
-    "format": "biome format",
-    "lint": "biome lint",
-    "prepack": "yarn clean && yarn build",
-    "test": "yarn lint && yarn tsc && yarn format && yarn unit",
+    "format": "vp fmt --check",
+    "lint": "vp lint",
+    "prepack": "npm run clean && npm run build",
+    "test": "npm run lint && npm run tsc && npm run format && npm run unit",
     "tsc": "svelte-check --tsconfig ./tsconfig.json",
     "unit": "vp test",
     "watch": "svelte-package --input src --output dist --watch"
   },
-  "keywords": [
-    "analog-clock",
-    "clock",
-    "svelte",
-    "time"
-  ],
-  "author": {
-    "name": "Adhi Ravishankar",
-    "email": "adhiravishankar@gmail.com"
-  },
-  "license": "MIT",
-  "peerDependencies": {
-    "svelte": "^5.0.0"
-  },
   "devDependencies": {
-    "@biomejs/biome": "2.6.4",
     "@sveltejs/package": "^3.0.2",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@vitest/browser-playwright": "5.0.5",
@@ -56,13 +61,7 @@
     "vitest": "5.0.5",
     "vitest-browser-svelte": "^3.1.0"
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
-  "files": [
-    "dist/**/*",
-    "src/**/*",
-    "!**/*.spec.*"
-  ]
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  }
 }

@@ -25,33 +25,23 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Install Corepack
-        run: npm install -g corepack
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: yarn --immutable
+        run: npm ci
 
+      # Packages are listed in dependency order
       - name: Publish with latest tag
         if: github.event.release.prerelease == false
         run: |
-          (cd packages/svelte-fit-action && yarn npm publish --tag latest)
-          (cd packages/svelte-analog-clock && yarn npm publish --tag latest)
-          (cd packages/svelte-range-calendar && yarn npm publish --tag latest)
-          (cd packages/svelte-date-input && yarn npm publish --tag latest)
-          (cd packages/svelte-time-input && yarn npm publish --tag latest)
-          (cd packages/svelte-datetime-input && yarn npm publish --tag latest)
-          (cd packages/svelte-datetimerange-picker && yarn npm publish --tag latest)
+          for package in svelte-fit-action svelte-analog-clock svelte-range-calendar svelte-date-input svelte-time-input svelte-datetime-input svelte-datetimerange-picker; do
+            npm publish --workspace "$package" --tag latest
+          done
 
       - name: Publish with next tag
         if: github.event.release.prerelease == true
         run: |
-          (cd packages/svelte-fit-action && yarn npm publish --tag next)
-          (cd packages/svelte-analog-clock && yarn npm publish --tag next)
-          (cd packages/svelte-range-calendar && yarn npm publish --tag next)
-          (cd packages/svelte-date-input && yarn npm publish --tag next)
-          (cd packages/svelte-time-input && yarn npm publish --tag next)
-          (cd packages/svelte-datetime-input && yarn npm publish --tag next)
-          (cd packages/svelte-datetimerange-picker && yarn npm publish --tag next)
+          for package in svelte-fit-action svelte-analog-clock svelte-range-calendar svelte-date-input svelte-time-input svelte-datetime-input svelte-datetimerange-picker; do
+            npm publish --workspace "$package" --tag next
+          done
