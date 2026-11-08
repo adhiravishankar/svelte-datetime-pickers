@@ -4,6 +4,14 @@ Segmented date input fields for your Svelte 5 app, plus the engine shared with [
 
 The component renders a native `<input type="date">` (hidden, used for form submission and validation) and one field per format token. Fields move focus automatically while typing and on arrow keys, and the value is only reported once all fields form a valid date.
 
+## Installation
+
+```sh
+npm install svelte-date-input
+```
+
+Requires Svelte 5 or later.
+
 ## Usage
 
 ```svelte
@@ -25,6 +33,10 @@ Fields get class names `${className}__input`, `${className}__day` (and `__month`
 ## Building blocks
 
 `SegmentedInput` (with a `kind` of `"date"`, `"time"` or `"datetime"`), `SegmentInput`, `SegmentSelect`, `Divider`, and the `parseFormat`, `getDefaultFormatParts`, `getMonthNames` and `getAmPmLabels` helpers are exported for building other inputs.
+
+## Part of a monorepo
+
+`svelte-date-input` is part of the [svelte-datetime-pickers monorepo](https://github.com/adhiravishankar/svelte-datetime-pickers). See the [live demo and Storybook](https://adhiravishankar.github.io/svelte-datetime-pickers/).
 
 ## License
 

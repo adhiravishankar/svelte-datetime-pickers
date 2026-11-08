@@ -1,64 +1,50 @@
 #!/usr/bin/env node
-// Builds the four docs sites for GitHub Pages and puts them in one folder:
+// Builds the two sites for GitHub Pages and puts them in one folder:
 //
-//   _site/index.html                  a landing page that links to the sites
-//   _site/material-tanstack/          each site, built with its own base path
-//   _site/shadcn-tanstack/
-//   _site/material-headless/
-//   _site/shadcn-headless/
+//   _site/index.html    a landing page that links to the sites
+//   _site/sample/       the Astro sample page, built with its own base path
+//   _site/storybook/    Storybook
 //
-// The sites are served from https://<owner>.github.io/<repository>/<site>/, so each one is built with
-// BASE_PATH=/<repository>/<site>. Environment variables:
-//   PAGES_REPO  the repository name, the first part of the path (default: svelte-tables)
-//   SITE_URL    the origin, for canonical links and the sitemap (default: https://adhiravishankar.github.io)
+// The sites are served from https://<owner>.github.io/<repository>/<site>/, so the sample is built
+// with BASE_PATH=/<repository>/sample. Storybook uses relative paths and needs no base.
+// Environment variables:
+//   PAGES_REPO  the repository name, the first part of the path (default: svelte-datetime-pickers)
+//   SITE_URL    the origin, for canonical links (default: https://adhiravishankar.github.io)
+//
+// `sample` and `storybook` are not workspaces: each has its own `npm install`, which this script
+// runs when the folder has no node_modules.
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
-const repo = process.env.PAGES_REPO ?? 'svelte-tables';
+const repo = process.env.PAGES_REPO ?? 'svelte-datetime-pickers';
 const siteUrl = process.env.SITE_URL ?? 'https://adhiravishankar.github.io';
 const out = join(root, '_site');
 
 const SITES = [
   {
-    slug: 'material-tanstack',
-    title: 'Material TanStack',
-    text: 'Svelte Material UI on TanStack Table v9. The full feature set.',
-    docs: 'material-svelte-tanstack-table-docs',
-    lib: 'material-svelte-tanstack-table',
-    folder: 'material-tanstack-table-docs',
+    slug: 'sample',
+    title: 'Sample page',
+    text: 'Every component on one Astro page: the picker, inputs, range calendar and clock.',
+    folder: 'sample',
+    dist: 'dist',
+    env: { BASE_PATH: `/${repo}/sample`, SITE_URL: siteUrl },
   },
   {
-    slug: 'shadcn-tanstack',
-    title: 'shadcn TanStack',
-    text: 'shadcn-svelte and Tailwind on TanStack Table v9. The full feature set.',
-    docs: 'shadcn-svelte-tanstack-table-docs',
-    lib: 'shadcn-svelte-tanstack-table',
-    folder: 'shadcn-tanstack-table-docs',
-  },
-  {
-    slug: 'material-headless',
-    title: 'Material headless',
-    text: 'Svelte Material UI on Svelte Headless Table. Plugin based and smaller.',
-    docs: 'material-svelte-headless-table-docs',
-    lib: 'material-svelte-headless-table',
-    folder: 'material-headless-table-docs',
-  },
-  {
-    slug: 'shadcn-headless',
-    title: 'shadcn headless',
-    text: 'shadcn-svelte and Tailwind on Svelte Headless Table. Plugin based and smaller.',
-    docs: 'shadcn-svelte-headless-table-docs',
-    lib: 'shadcn-svelte-headless-table',
-    folder: 'shadcn-headless-table-docs',
+    slug: 'storybook',
+    title: 'Storybook',
+    text: 'Stories for each component, with controls for every option.',
+    folder: 'storybook',
+    dist: 'storybook-static',
+    env: {},
   },
 ];
 
-const run = (command, env = {}) => {
+const run = (command, cwd = root, env = {}) => {
   const result = spawnSync(command, {
-    cwd: root,
+    cwd,
     env: { ...process.env, ...env },
     shell: true,
     stdio: 'inherit',
@@ -69,18 +55,21 @@ const run = (command, env = {}) => {
   }
 };
 
+// the sample resolves the picker through the root workspace symlink, so build the packages first
+console.log('\n== Packages');
+run('npm install');
+run('npm run build');
+
 // empty the folder rather than delete it: Windows refuses to delete a folder that a shell has open
 mkdirSync(out, { recursive: true });
 for (const entry of readdirSync(out)) rmSync(join(out, entry), { force: true, recursive: true });
 
 for (const site of SITES) {
   console.log(`\n== ${site.title}`);
-  run(`npm run build -w ${site.lib}`);
-  run(`npm run build -w ${site.docs}`, {
-    BASE_PATH: `/${repo}/${site.slug}`,
-    SITE_URL: siteUrl,
-  });
-  cpSync(join(root, 'apps', site.folder, 'dist'), join(out, site.slug), { recursive: true });
+  const cwd = join(root, site.folder);
+  if (!existsSync(join(cwd, 'node_modules'))) run('npm install', cwd);
+  run('npm run build', cwd, site.env);
+  cpSync(join(cwd, site.dist), join(out, site.slug), { recursive: true });
 }
 
 const cards = SITES.map(
@@ -97,8 +86,8 @@ writeFileSync(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Svelte Tables</title>
-    <meta name="description" content="Data tables for Svelte 5 in four flavors." />
+    <title>svelte-datetimerange-picker</title>
+    <meta name="description" content="Date, time and range pickers for Svelte 5." />
     <style>
       :root { color-scheme: light dark; --bg: #fff; --fg: #1a1a1a; --muted: #666; --border: #ddd; --accent: #3b6df0; }
       @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --muted: #aaa; --border: #333; --accent: #7ea2ff; } }
@@ -117,8 +106,8 @@ writeFileSync(
   </head>
   <body>
     <main>
-      <h1>Svelte Tables</h1>
-      <p class="lead">Data tables for Svelte 5, with Material or shadcn-svelte components, on TanStack Table or Svelte Headless Table.</p>
+      <h1>svelte-datetimerange-picker</h1>
+      <p class="lead">Date, time and range pickers for Svelte 5, plus the inputs, calendar and clock they are built from.</p>
       <div class="grid">
 ${cards}
       </div>

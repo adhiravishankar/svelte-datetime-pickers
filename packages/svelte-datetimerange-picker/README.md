@@ -124,6 +124,19 @@ Any other props (`id`, `data-*`, `aria-*`, event handlers such as `onclick` or `
 - `data-testid` and `id` are passed through as regular attributes.
 - Stylesheets are imported automatically, and CSS classes use the `svelte-` prefix instead of `react-`.
 
+## Related packages
+
+The picker is built from these packages, which you can also use on their own:
+
+- [svelte-datetime-input](https://github.com/adhiravishankar/svelte-datetime-pickers/tree/main/packages/svelte-datetime-input): segmented datetime input fields.
+- [svelte-time-input](https://github.com/adhiravishankar/svelte-datetime-pickers/tree/main/packages/svelte-time-input): segmented time input fields.
+- [svelte-date-input](https://github.com/adhiravishankar/svelte-datetime-pickers/tree/main/packages/svelte-date-input): segmented date input fields and the shared engine.
+- [svelte-range-calendar](https://github.com/adhiravishankar/svelte-datetime-pickers/tree/main/packages/svelte-range-calendar): calendar with range selection.
+- [svelte-analog-clock](https://github.com/adhiravishankar/svelte-datetime-pickers/tree/main/packages/svelte-analog-clock): analog clock.
+- [svelte-fit-action](https://github.com/adhiravishankar/svelte-datetime-pickers/tree/main/packages/svelte-fit-action): `fit` and `portal` actions.
+
+See the [live demo and Storybook](https://adhiravishankar.github.io/svelte-datetime-pickers/).
+
 ## License
 
 The MIT License.

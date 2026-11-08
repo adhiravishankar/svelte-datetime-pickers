@@ -19,16 +19,19 @@
   "type": "module",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "build:pages": "node scripts/build-pages.mjs",
     "dev": "concurrently --kill-others-on-fail \"npm run watch --workspace svelte-fit-action\" \"npm run watch --workspace svelte-analog-clock\" \"npm run watch --workspace svelte-range-calendar\" \"npm run watch --workspace svelte-date-input\" \"npm run watch --workspace svelte-time-input\" \"npm run watch --workspace svelte-datetime-input\" \"npm run watch --workspace svelte-datetimerange-picker\" \"npm run dev --workspace test\"",
     "format": "vp fmt --check",
     "lint": "vp lint",
     "postinstall": "husky",
+    "publish:all": "node scripts/publish.mjs",
+    "publish:dry": "node scripts/publish.mjs --dry-run",
     "test": "npm run test --workspaces --if-present",
     "tsc": "npm run tsc --workspaces --if-present",
     "unit": "npm run unit --workspaces --if-present"
   },
   "devDependencies": {
-    "concurrently": "^9.2.0",
+    "concurrently": "^10.0.6",
     "husky": "^9.1.7",
     "vite-plus": "1.4.0"
   },

@@ -2,6 +2,14 @@
 
 A calendar for your Svelte 5 app, with century, decade, year and month views and range selection. Svelte port of [React-Calendar](https://github.com/wojtekmaj/react-calendar).
 
+## Installation
+
+```sh
+npm install svelte-range-calendar
+```
+
+Requires Svelte 5 or later.
+
 ## Usage
 
 ```svelte
@@ -42,6 +50,10 @@ Styles are imported automatically. Elements use BEM class names starting with `s
 | onActiveStartDateChange, onViewChange, onDrillDown, onDrillUp                                                                | Called with `{ action, activeStartDate, value, view }`.                                                        | n/a                                              |
 | onClickDay, onClickMonth, onClickYear, onClickDecade                                                                         | `(date, event) => void`.                                                                                       | n/a                                              |
 | class                                                                                                                        | Class name(s) added along with `"svelte-calendar"`.                                                            | n/a                                              |
+
+## Part of a monorepo
+
+`svelte-range-calendar` is part of the [svelte-datetime-pickers monorepo](https://github.com/adhiravishankar/svelte-datetime-pickers). See the [live demo and Storybook](https://adhiravishankar.github.io/svelte-datetime-pickers/).
 
 ## License
 

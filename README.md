@@ -16,7 +16,33 @@ This is a Svelte port of [React-DateTimeRange-Picker](https://github.com/wojtekm
 
 `make-event-props` and `clsx` are not needed: Svelte spreads rest props (including event handlers) onto elements and accepts arrays and objects in `class`.
 
+## Install and usage
+
+```sh
+npm install svelte-datetimerange-picker
+```
+
+```svelte
+<script lang="ts">
+  import DateTimeRangePicker from 'svelte-datetimerange-picker';
+
+  type ValuePiece = Date | null;
+
+  type Value = ValuePiece | [ValuePiece, ValuePiece];
+
+  let value = $state<Value>([new Date(), new Date()]);
+</script>
+
+<DateTimeRangePicker onChange={(nextValue) => (value = nextValue)} {value} />
+```
+
+See the [picker README](packages/svelte-datetimerange-picker) for all props.
+
+**Live demo:** the [sample page and Storybook](https://adhiravishankar.github.io/svelte-datetime-pickers/) are published on GitHub Pages.
+
 ## Development
+
+Requires Node.js `^22.18.0`, `^24.11.0` or `>=26.0.0` (Vitest 5) and the npm version pinned in `packageManager` in the root `package.json`.
 
 The repo uses TypeScript 6 and [Vite+](https://viteplus.dev): `vp test` runs the tests, `vp dev` / `vp build` run the test page, and `vp lint` / `vp fmt` (Oxlint and Oxfmt) lint and format the code. Packages are built with `@sveltejs/package`.
 
@@ -24,14 +50,21 @@ The repo uses TypeScript 6 and [Vite+](https://viteplus.dev): `vp test` runs the
 
 ```sh
 npm install
-npm run build   # builds every package in dependency order
-npm test         # runs lint, type checks, format checks and unit tests
-npm run unit     # runs unit tests in Chromium (run `npm exec --workspace svelte-datetimerange-picker -- playwright install chromium-headless-shell` once)
-npm run tsc      # type-checks with svelte-check
+npm run build        # builds every package in dependency order
+npm test             # runs lint, type checks, format checks and unit tests in every package
+npm run unit         # runs unit tests in Chromium
+npm run tsc          # type-checks with svelte-check
 npm run lint
 npm run format
-npm run dev     # watches the packages and starts the test page
+npm run dev          # watches the packages and starts the test page
+npm run build:pages  # builds sample + storybook into _site/ for GitHub Pages
+npm run publish:dry  # builds, tests and type-checks, then a publish dry run
+npm run publish:all  # publishes every library to npm (--otp, --tag, --skip-checks)
 ```
+
+Run `npm exec --workspace svelte-datetimerange-picker -- playwright install chromium-headless-shell` once before `npm run unit`.
+
+`.npmrc` sets `min-release-age=14`, so dependencies must be at least 14 days old.
 
 - [`test`](test) is a page with controls for trying out every option of the picker.
 - [`sample`](sample) is a minimal usage example built with [Astro](https://astro.build). Run `npm install` at the repo root first (it resolves the picker through the workspace), then `cd sample && npm install && npm run dev`.

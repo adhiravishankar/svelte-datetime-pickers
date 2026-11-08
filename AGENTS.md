@@ -5,6 +5,7 @@ npm workspaces monorepo of Svelte 5 components (runes). See CONTRIBUTING.md for 
 ## Layout
 
 - `packages/*`: svelte-datetimerange-picker, svelte-datetime-input, svelte-time-input, svelte-date-input, svelte-range-calendar, svelte-analog-clock, svelte-fit-action (actions only, no components).
+- `scripts`: `build-pages.mjs` (GitHub Pages bundle of `sample` + `storybook` into `_site/`), `publish.mjs` (npm publish), `rehype-base.mjs`.
 - `test`: workspace page with controls for every picker option.
 - `sample`: Astro example. NOT a workspace; has its own `npm install`. Run `npm install` at the repo root first, because it resolves the picker through the root workspace symlink.
 - `storybook`: Storybook 10. NOT a workspace; has its own `npm install`. Stories are in `storybook/stories/` and packages are aliased to their `src`. It must stay outside the workspaces because it conflicts with the pinned `vite-plus` override at the root.
@@ -15,6 +16,8 @@ npm workspaces monorepo of Svelte 5 components (runes). See CONTRIBUTING.md for 
 - `npm run unit`: Chromium tests (Playwright).
 - `npm run tsc`, `npm run lint`, `npm run format`.
 - `npm run dev`: watches the packages and starts the test page.
+- `npm run build:pages`: builds `sample` and `storybook` into `_site/` for GitHub Pages. It runs `npm install` and `npm run build` at the root first.
+- `npm run publish:dry`: builds, tests and type-checks every library, then does everything except upload. `npm run publish:all` publishes in dependency order and skips versions already on npm. It also takes `--otp`, `--tag` and `--skip-checks`, and you can pass package names to publish only some.
 
 ## Conventions
 
@@ -22,3 +25,5 @@ npm workspaces monorepo of Svelte 5 components (runes). See CONTRIBUTING.md for 
 - Oxfmt does not format `.svelte` files: format them by hand (2-space indentation, single quotes, about 100 columns).
 - The root `overrides` pin `vite` to the vite-plus fork. Do not add tooling to the root that peers on stock Vite.
 - New components need a story in `storybook/stories/`.
+- `.npmrc` sets `min-release-age=14`, so dependencies must be at least 14 days old. `legacy-peer-deps=true` is set too.
+- TypeScript targets `es2025` (`tsconfig.base.json`). Husky runs a pre-commit hook after `npm install`.
