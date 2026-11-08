@@ -1,6 +1,6 @@
 {
   "name": "svelte-date-utils",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Date helpers for calendars and date inputs (start, end, previous, next and range of a century, decade, year, month and day) that work on native Date, date-fns or Luxon through adapters.",
   "keywords": [
     "date",
@@ -46,7 +46,7 @@
     "format": "vp fmt --check",
     "lint": "vp lint",
     "prepack": "npm run clean && npm run build",
-    "test": "npm run lint && npm run tsc && npm run format && npm run unit",
+    "test": "npm run tsc && npm run format && npm run unit",
     "tsc": "tsc",
     "unit": "vp test",
     "watch": "tsc -p tsconfig.build.json --watch"

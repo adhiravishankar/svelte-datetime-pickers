@@ -13,6 +13,9 @@ This is a Svelte port of [React-DateTimeRange-Picker](https://github.com/wojtekm
 | [`svelte-range-calendar`](packages/svelte-range-calendar)             | [react-calendar](https://github.com/wojtekmaj/react-calendar)                                  | Calendar with century, decade, year and month views and range selection.    |
 | [`svelte-analog-clock`](packages/svelte-analog-clock)                 | [react-clock](https://github.com/wojtekmaj/react-clock)                                        | Analog clock.                                                               |
 | [`svelte-fit-action`](packages/svelte-fit-action)                     | [react-fit](https://github.com/wojtekmaj/react-fit)                                            | `fit` action keeping popups in the viewport, and `portal` action.           |
+| [`svelte-date-utils`](packages/svelte-date-utils)                     | [@wojtekmaj/date-utils](https://github.com/wojtekmaj/date-utils)                               | Date helpers on native `Date`, date-fns or Luxon, through adapters.         |
+
+`svelte-date-utils` keeps the API of `@wojtekmaj/date-utils` and adds `createDateUtils(adapter)`, with `AdapterDateFns` and `AdapterLuxon` (from `svelte-date-utils/date-fns` and `svelte-date-utils/luxon`) adapted from `@mui/x-date-pickers`.
 
 `make-event-props` and `clsx` are not needed: Svelte spreads rest props (including event handlers) onto elements and accepts arrays and objects in `class`.
 

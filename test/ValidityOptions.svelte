@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getISOLocalDate } from '@wojtekmaj/date-utils';
+  import { getISOLocalDate } from 'svelte-date-utils';
 
   type ValidityOptionsProps = {
     maxDate?: Date;

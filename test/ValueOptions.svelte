@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getISOLocalDateTime } from '@wojtekmaj/date-utils';
+  import { getISOLocalDateTime } from 'svelte-date-utils';
 
   import type { LooseValue } from './shared/types.js';
 

@@ -1,6 +1,6 @@
 {
   "name": "svelte-fit-action",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Svelte actions that keep popups inside the viewport (fit) and render them elsewhere in the DOM (portal).",
   "keywords": [
     "fit",

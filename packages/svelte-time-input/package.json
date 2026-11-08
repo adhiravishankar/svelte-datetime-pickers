@@ -1,6 +1,6 @@
 {
   "name": "svelte-time-input",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Segmented time input fields for your Svelte app.",
   "keywords": [
     "input",
@@ -49,7 +49,7 @@
     "watch": "svelte-package --input src --output dist --watch"
   },
   "dependencies": {
-    "svelte-date-input": "^0.1.0"
+    "svelte-date-input": "^0.2.0"
   },
   "devDependencies": {
     "@sveltejs/package": "^3.0.1",
