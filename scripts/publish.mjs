@@ -18,6 +18,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
 // In dependency order: a package is published after the ones it depends on.
 const LIBRARIES = [
+  'svelte-date-utils',
   'svelte-fit-action',
   'svelte-analog-clock',
   'svelte-range-calendar',
@@ -121,6 +122,8 @@ for (const library of todo) {
   const spec = `${library.name}@${library.version}`;
   step(`${spec}: ${dryRun ? 'dry run' : 'publish'}`);
   const publishArgs = ['publish', '-w', library.name, '--access', 'public'];
+  // Package manifests enable provenance, but npm can only generate it in a supported CI.
+  if (process.env.GITHUB_ACTIONS !== 'true') publishArgs.push('--provenance=false');
   if (dryRun) publishArgs.push('--dry-run');
   if (tag) publishArgs.push('--tag', tag);
   if (otp) publishArgs.push('--otp', otp);

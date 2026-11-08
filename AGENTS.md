@@ -4,7 +4,7 @@ npm workspaces monorepo of Svelte 5 components (runes). See CONTRIBUTING.md for 
 
 ## Layout
 
-- `packages/*`: svelte-datetimerange-picker, svelte-datetime-input, svelte-time-input, svelte-date-input, svelte-range-calendar, svelte-analog-clock, svelte-fit-action (actions only, no components).
+- `packages/*`: svelte-datetimerange-picker, svelte-datetime-input, svelte-time-input, svelte-date-input, svelte-range-calendar, svelte-analog-clock, svelte-fit-action (actions only, no components), svelte-date-utils (plain TypeScript date helpers; adapters for native Date, date-fns and Luxon, adapted from `@mui/x-date-pickers`).
 - `scripts`: `build-pages.mjs` (GitHub Pages bundle of `sample` + `storybook` into `_site/`), `publish.mjs` (npm publish), `rehype-base.mjs`.
 - `test`: workspace page with controls for every picker option.
 - `sample`: Astro example. NOT a workspace; has its own `npm install`. Run `npm install` at the repo root first, because it resolves the picker through the root workspace symlink.

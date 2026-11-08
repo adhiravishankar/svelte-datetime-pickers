@@ -1,4 +1,4 @@
-import { getISOLocalDate, getISOLocalDateTime } from '@wojtekmaj/date-utils';
+import { getISOLocalDate, getISOLocalDateTime } from 'svelte-date-utils';
 
 import type { InputDetail, InputKind, LooseValuePiece, SegmentName } from './types.js';
 

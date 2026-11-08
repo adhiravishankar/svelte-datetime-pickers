@@ -7,6 +7,7 @@
     "email": "adhiravishankar@gmail.com"
   },
   "workspaces": [
+    "packages/svelte-date-utils",
     "packages/svelte-fit-action",
     "packages/svelte-analog-clock",
     "packages/svelte-range-calendar",
@@ -14,13 +15,15 @@
     "packages/svelte-time-input",
     "packages/svelte-datetime-input",
     "packages/svelte-datetimerange-picker",
+    "sample",
+    "storybook",
     "test"
   ],
   "type": "module",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "build:pages": "node scripts/build-pages.mjs",
-    "dev": "concurrently --kill-others-on-fail \"npm run watch --workspace svelte-fit-action\" \"npm run watch --workspace svelte-analog-clock\" \"npm run watch --workspace svelte-range-calendar\" \"npm run watch --workspace svelte-date-input\" \"npm run watch --workspace svelte-time-input\" \"npm run watch --workspace svelte-datetime-input\" \"npm run watch --workspace svelte-datetimerange-picker\" \"npm run dev --workspace test\"",
+    "dev": "concurrently --kill-others-on-fail \"npm run watch --workspace svelte-date-utils\" \"npm run watch --workspace svelte-fit-action\" \"npm run watch --workspace svelte-analog-clock\" \"npm run watch --workspace svelte-range-calendar\" \"npm run watch --workspace svelte-date-input\" \"npm run watch --workspace svelte-time-input\" \"npm run watch --workspace svelte-datetime-input\" \"npm run watch --workspace svelte-datetimerange-picker\" \"npm run dev --workspace test\"",
     "format": "vp fmt --check",
     "lint": "vp lint",
     "postinstall": "husky",

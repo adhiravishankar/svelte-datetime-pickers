@@ -1,0 +1,77 @@
+{
+  "name": "svelte-date-utils",
+  "version": "0.1.0",
+  "description": "Date helpers for calendars and date inputs (start, end, previous, next and range of a century, decade, year, month and day) that work on native Date, date-fns or Luxon through adapters.",
+  "keywords": [
+    "date",
+    "date-fns",
+    "luxon",
+    "svelte",
+    "utils"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Adhi Ravishankar",
+    "email": "adhiravishankar@gmail.com"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*",
+    "!**/*.spec.*"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./date-fns": {
+      "types": "./dist/date-fns.d.ts",
+      "default": "./dist/date-fns.js"
+    },
+    "./luxon": {
+      "types": "./dist/luxon.d.ts",
+      "default": "./dist/luxon.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "node -e \"fs.rmSync('./dist', { recursive: true, force: true })\"",
+    "format": "vp fmt --check",
+    "lint": "vp lint",
+    "prepack": "npm run clean && npm run build",
+    "test": "npm run lint && npm run tsc && npm run format && npm run unit",
+    "tsc": "tsc",
+    "unit": "vp test",
+    "watch": "tsc -p tsconfig.build.json --watch"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.7.1",
+    "@vitest/browser-playwright": "5.0.5",
+    "date-fns": "^4.1.0",
+    "luxon": "^3.7.2",
+    "playwright": "^1.64.1",
+    "typescript": "^6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
+    "vite-plus": "1.4.0",
+    "vitest": "5.0.5"
+  },
+  "peerDependencies": {
+    "date-fns": "^3.2.0 || ^4.0.0",
+    "luxon": "^3.0.2"
+  },
+  "peerDependenciesMeta": {
+    "date-fns": {
+      "optional": true
+    },
+    "luxon": {
+      "optional": true
+    }
+  }
+}

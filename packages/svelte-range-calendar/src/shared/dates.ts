@@ -9,7 +9,7 @@ import {
   getMonthStart,
   getYearEnd,
   getYearStart,
-} from '@wojtekmaj/date-utils';
+} from 'svelte-date-utils';
 
 import type { CalendarType, DateType, LooseValue, LooseValuePiece, Range, View } from './types.js';
 

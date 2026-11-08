@@ -2,6 +2,14 @@
 
 An analog clock for your Svelte 5 app. Svelte port of [React-Clock](https://github.com/wojtekmaj/react-clock).
 
+## Installation
+
+```sh
+npm install svelte-analog-clock
+```
+
+Requires Svelte 5 or later.
+
 ## Usage
 
 ```svelte
@@ -32,6 +40,10 @@ Styles are imported automatically. Elements use BEM class names starting with `s
 | size                                                                       | Clock size, in pixels.                                                                                                         | `150`                   |
 | useMillisecondPrecision                                                    | Whether the second hand moves smoothly. Only applies when `value` is `undefined`.                                              | `false`                 |
 | value                                                                      | A `Date` or a time string such as `"22:15:30"`. `undefined` shows the current time and keeps ticking; `null` renders no hands. | current time            |
+
+## Part of a monorepo
+
+`svelte-analog-clock` is part of the [svelte-datetime-pickers monorepo](https://github.com/adhiravishankar/svelte-datetime-pickers). See the [live demo and Storybook](https://adhiravishankar.github.io/svelte-datetime-pickers/).
 
 ## License
 

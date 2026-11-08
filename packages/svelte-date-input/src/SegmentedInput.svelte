@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getDaysInMonth } from '@wojtekmaj/date-utils';
+  import { getDaysInMonth } from 'svelte-date-utils';
   import { getUserLocale } from 'get-user-locale';
   import { onMount, untrack } from 'svelte';
 
