@@ -6,6 +6,8 @@ export type { AdapterDateOptions } from './AdapterDate.js';
 export { createDateUtils } from './createDateUtils.js';
 export type { DateUtils, TimeLike, YearLike } from './createDateUtils.js';
 export type { DateAdapter } from './types.js';
+export { getUserLocale, getUserLocales } from './getUserLocale.js';
+export type { UserLocaleOptions } from './getUserLocale.js';
 
 /**
  * The helpers on the native `Date`, with the names and behavior of `@wojtekmaj/date-utils`.

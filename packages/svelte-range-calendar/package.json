@@ -1,6 +1,6 @@
 {
   "name": "svelte-range-calendar",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A calendar with range selection for your Svelte app.",
   "keywords": [
     "calendar",
@@ -50,8 +50,7 @@
     "watch": "svelte-package --input src --output dist --watch"
   },
   "dependencies": {
-    "get-user-locale": "^3.0.0",
-    "svelte-date-utils": "^0.2.0"
+    "svelte-date-utils": "^0.3.0"
   },
   "devDependencies": {
     "@sveltejs/package": "^3.0.1",

@@ -1,8 +1,7 @@
 <script lang="ts">
   import './Calendar.css';
 
-  import { getMonthEnd, getMonthStart } from 'svelte-date-utils';
-  import { getUserLocale } from 'get-user-locale';
+  import { getMonthEnd, getMonthStart, getUserLocale } from 'svelte-date-utils';
   import { untrack } from 'svelte';
 
   import Navigation from './Navigation.svelte';

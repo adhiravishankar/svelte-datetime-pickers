@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { getDaysInMonth } from 'svelte-date-utils';
-  import { getUserLocale } from 'get-user-locale';
+  import { getDaysInMonth, getUserLocale } from 'svelte-date-utils';
   import { onMount, untrack } from 'svelte';
 
   import Divider from './Divider.svelte';

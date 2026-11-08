@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
-import { describe, expect, it } from 'vite-plus/test';
+import { describe, expect, it, vi } from 'vite-plus/test';
 
-import { AdapterDate, createDateUtils, dateUtils } from './index.js';
+import { AdapterDate, createDateUtils, dateUtils, getUserLocale, getUserLocales } from './index.js';
 import { AdapterDateFns } from './date-fns.js';
 import { AdapterLuxon } from './luxon.js';
 
@@ -129,5 +129,38 @@ describe('native adapter', () => {
     expect(native.formatByString(date, 'yyyy-MM-dd HH:mm')).toBe('2026-11-08 13:45');
     expect(native.parse('2026-11-08', 'yyyy-MM-dd')).toEqual(new Date(2026, 10, 8));
     expect(native.isValid(native.parse('nope', 'yyyy-MM-dd'))).toBe(false);
+  });
+});
+
+describe('getUserLocale', () => {
+  it('returns the first of the locales', () => {
+    expect(getUserLocale()).toBe(getUserLocales()[0]);
+    expect(getUserLocales()).toEqual([...new Set(getUserLocales())]);
+  });
+
+  it('adds the fallback locale only when asked', () => {
+    expect(getUserLocales({ fallbackLocale: 'xx-YY' })).toContain('xx-YY');
+    expect(getUserLocales({ useFallbackLocale: false, fallbackLocale: 'xx-YY' })).not.toContain(
+      'xx-YY',
+    );
+  });
+
+  it('normalizes the locales of the browser', () => {
+    const languages = vi.spyOn(navigator, 'languages', 'get');
+    const language = vi.spyOn(navigator, 'language', 'get');
+    languages.mockReturnValue(['en-us', 'fr-FR,de', 'C', 'pl_PL'.replace('_', '-')]);
+    language.mockReturnValue('en-US.UTF-8');
+    try {
+      expect(getUserLocales({ useFallbackLocale: false })).toEqual([
+        'en-US',
+        'fr-FR',
+        'de',
+        'pl-PL',
+      ]);
+      expect(getUserLocale()).toBe('en-US');
+    } finally {
+      languages.mockRestore();
+      language.mockRestore();
+    }
   });
 });
