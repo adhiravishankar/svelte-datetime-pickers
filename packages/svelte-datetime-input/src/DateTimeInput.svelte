@@ -2,16 +2,14 @@
   import { SegmentedInput } from 'svelte-date-input';
 
   import type { ComponentProps } from 'svelte';
-  import type { DateAdapter } from 'svelte-date-utils';
   import type { TimeDetail } from 'svelte-date-input';
 
   type LooseValuePiece<T> = string | T | null;
 
   type DateTimeInputProps<T> = Omit<
     ComponentProps<typeof SegmentedInput>,
-    'adapter' | 'kind' | 'maxDetail' | 'onChange' | 'value'
+    'kind' | 'maxDetail' | 'onChange' | 'value'
   > & {
-    adapter: DateAdapter<T>;
     /**
      * The most detailed field the user shall see.
      *

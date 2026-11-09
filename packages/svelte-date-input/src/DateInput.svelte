@@ -2,12 +2,10 @@
   import SegmentedInput from './SegmentedInput.svelte';
 
   import type { ComponentProps } from 'svelte';
-  import type { DateAdapter } from 'svelte-date-utils';
   import type { DateDetail, LooseValuePiece } from './shared/types.js';
 
   type DateInputProps<T> = Omit<
     ComponentProps<typeof SegmentedInput>,
-    | 'adapter'
     | 'hourAriaLabel'
     | 'hourPlaceholder'
     | 'kind'
@@ -20,7 +18,6 @@
     | 'amPmAriaLabel'
     | 'value'
   > & {
-    adapter: DateAdapter<T>;
     /**
      * The most detailed field the user shall see.
      *

@@ -1,5 +1,6 @@
 <script lang="ts" generics="T">
   import './Clock.css';
+  import { untrack } from 'svelte';
   import type { DateAdapter } from 'svelte-date-utils';
 
   import type { ClassValue } from 'svelte/elements';
@@ -178,14 +179,16 @@
     value,
   }: ClockProps<T> = $props();
 
-  if (!adapter) throw new Error('Clock requires a date adapter.');
+  untrack(() => {
+    if (!adapter) throw new Error('Clock requires a date adapter.');
+  });
 
   const hourMarks = Array.from({ length: 12 }, (_, index) => index);
   const minuteMarks = Array.from({ length: 60 }, (_, index) => index).filter(
     (index) => index % 5 !== 0,
   );
 
-  let now = $state(adapter.date());
+  let now = $state(untrack(() => adapter.date()));
 
   $effect(() => {
     if (value !== undefined) {

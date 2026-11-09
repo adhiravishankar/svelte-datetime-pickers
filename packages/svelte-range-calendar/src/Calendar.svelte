@@ -285,7 +285,7 @@
     if (!adapter) throw new Error('Calendar requires a date adapter.');
   });
 
-  const dateUtils = createDateUtils(adapter);
+  const dateUtils = $derived(createDateUtils(adapter));
   const getBegin = (type: DateType, date: T) => getDateBegin(adapter, type, date);
   const getEnd = (type: DateType, date: T) => getDateEnd(adapter, type, date);
   const getRange = (type: DateType, date: T) => getDateRange(adapter, type, date);

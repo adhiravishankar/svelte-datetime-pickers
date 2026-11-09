@@ -283,7 +283,9 @@
     ...otherProps
   }: DateTimeRangePickerProps<T> = $props();
 
-  if (!adapter) throw new Error('DateTimeRangePicker requires a date adapter.');
+  untrack(() => {
+    if (!adapter) throw new Error('DateTimeRangePicker requires a date adapter.');
+  });
 
   let isCalendarOpen = $state<boolean | null>(untrack(() => isCalendarOpenProps));
   let isClockOpen = $state<boolean | null>(untrack(() => isClockOpenProps));

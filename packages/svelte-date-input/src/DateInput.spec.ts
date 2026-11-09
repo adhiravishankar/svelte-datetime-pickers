@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
-import { render } from 'vitest-browser-svelte';
+import { render as testRender } from 'vitest-browser-svelte';
+import DateAdapterContext from '../../../test/DateAdapterContext.svelte';
 
 import DateInput from './DateInput.svelte';
 import { parseFormat } from './shared/format.js';
@@ -35,7 +36,12 @@ describe('parseFormat', () => {
 });
 
 describe('DateInput', () => {
-  const props = { adapter: new AdapterDate(), className: 'input', locale: 'en-US', name: 'date' };
+  const render = (component: Parameters<typeof testRender>[0], props: object) =>
+    testRender(component, props, {
+      wrapper: DateAdapterContext,
+      wrapperProps: { adapter: new AdapterDate() },
+    });
+  const props = { className: 'input', locale: 'en-US', name: 'date' };
 
   it('renders a native date input with the given name and value', async () => {
     const { container } = await render(DateInput, { ...props, value: new Date(2017, 0, 5) });

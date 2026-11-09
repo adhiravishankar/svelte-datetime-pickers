@@ -113,7 +113,9 @@
     yearPlaceholder = '----',
   }: SegmentedInputProps<T> = $props();
 
-  if (!adapter) throw new Error('SegmentedInput requires a date adapter.');
+  untrack(() => {
+    if (!adapter) throw new Error('SegmentedInput requires a date adapter.');
+  });
 
   let root = $state<HTMLDivElement>();
 

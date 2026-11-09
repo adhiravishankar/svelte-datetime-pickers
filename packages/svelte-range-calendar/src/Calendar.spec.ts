@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
-import { render } from 'vitest-browser-svelte';
+import { render as testRender } from 'vitest-browser-svelte';
+import DateAdapterContext from '../../../test/DateAdapterContext.svelte';
 
 import Calendar from './Calendar.svelte';
 import { AdapterDate } from 'svelte-date-utils';
@@ -21,7 +22,12 @@ function findTile(container: Element, label: string, includeNeighbors = false) {
 }
 
 describe('Calendar', () => {
-  const baseProps = { adapter: new AdapterDate(), locale: 'en-US', value: new Date(2017, 0, 15) };
+  const render = (component: Parameters<typeof testRender>[0], props: object) =>
+    testRender(component, props, {
+      wrapper: DateAdapterContext,
+      wrapperProps: { adapter: new AdapterDate() },
+    });
+  const baseProps = { locale: 'en-US', value: new Date(2017, 0, 15) };
 
   it('renders the month of the value with navigation label', async () => {
     const { container } = await render(Calendar, baseProps);

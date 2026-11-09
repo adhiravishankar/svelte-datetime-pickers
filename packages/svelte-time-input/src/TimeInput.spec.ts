@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
 import { userEvent } from 'vite-plus/test/browser';
-import { render } from 'vitest-browser-svelte';
+import { render as testRender } from 'vitest-browser-svelte';
+import DateAdapterContext from '../../../test/DateAdapterContext.svelte';
 
 import TimeInput from './TimeInput.svelte';
 import { AdapterDate } from 'svelte-date-utils';
@@ -10,7 +11,12 @@ function getSegment(container: Element, name: string) {
 }
 
 describe('TimeInput', () => {
-  const props = { adapter: new AdapterDate(), className: 'input', locale: 'en-US', name: 'time' };
+  const render = (component: Parameters<typeof testRender>[0], props: object) =>
+    testRender(component, props, {
+      wrapper: DateAdapterContext,
+      wrapperProps: { adapter: new AdapterDate() },
+    });
+  const props = { className: 'input', locale: 'en-US', name: 'time' };
 
   it('renders a native time input', async () => {
     const { container } = await render(TimeInput, { ...props, value: '22:15' });
