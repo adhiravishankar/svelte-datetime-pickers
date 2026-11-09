@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="T">
   import './DateTimeRangePicker.css';
 
   import { untrack } from 'svelte';
@@ -6,6 +6,7 @@
   import { DateTimeInput } from 'svelte-datetime-input';
   import { fit, portal } from 'svelte-fit-action';
   import { Calendar } from 'svelte-range-calendar';
+  import type { DateAdapter } from 'svelte-date-utils';
 
   import type { ComponentProps, Snippet } from 'svelte';
   import type { ClassValue, HTMLAttributes } from 'svelte/elements';
@@ -15,11 +16,13 @@
   const outsideActionEvents = ['mousedown', 'focusin', 'touchstart'] as const;
   const allViews = ['hour', 'minute', 'second'] as const;
 
-  type CalendarProps = Omit<ComponentProps<typeof Calendar>, 'onChange' | 'selectRange' | 'value'>;
+  type CalendarProps<T> = Omit<ComponentProps<typeof Calendar>, 'adapter' | 'onChange' | 'selectRange' | 'value'>;
 
-  type ClockProps = Omit<ComponentProps<typeof Clock>, 'value'>;
+  type ClockProps<T> = Omit<ComponentProps<typeof Clock>, 'adapter' | 'value'>;
 
-  type DateTimeRangePickerProps = {
+  type DateTimeRangePickerProps<T> = {
+    /** Date adapter used for all picker values and operations. Required. */
+    adapter: DateAdapter<T>;
     /** `aria-label` for the AM/PM select input. */
     amPmAriaLabel?: string;
     /** Automatically focuses the input on mount. */
@@ -31,7 +34,7 @@
      */
     calendarIcon?: Snippet | string | null;
     /** Props to pass to the Calendar component. */
-    calendarProps?: CalendarProps;
+    calendarProps?: CalendarProps<T>;
     /**
      * Class name(s) that will be added along with `"svelte-datetimerange-picker"` to the main `<div>` element.
      *
@@ -46,7 +49,7 @@
      */
     clearIcon?: Snippet | string | null;
     /** Props to pass to the Clock component. */
-    clockProps?: ClockProps;
+    clockProps?: ClockProps<T>;
     /**
      * Whether to close the widgets on value selection. **Note**: It's recommended to use `shouldCloseWidgets` function instead.
      *
@@ -114,7 +117,7 @@
      */
     locale?: string;
     /** Maximum date that the user can select. */
-    maxDate?: Date;
+    maxDate?: T;
     /**
      * The most detailed calendar view that the user shall see. Can be `"hour"`, `"minute"` or `"second"`.
      *
@@ -122,7 +125,7 @@
      */
     maxDetail?: Detail;
     /** Minimum date that the user can select. */
-    minDate?: Date;
+    minDate?: T;
     /** `aria-label` for the minute input. */
     minuteAriaLabel?: string;
     /**
@@ -152,7 +155,7 @@
     /** Function called when the calendar opens. */
     onCalendarOpen?: () => void;
     /** Function called when the user picks a valid datetime. */
-    onChange?: (value: Value) => void;
+    onChange?: (value: Value<T>) => void;
     /** Function called when the clock closes. */
     onClockClose?: () => void;
     /** Function called when the clock opens. */
@@ -214,7 +217,7 @@
      * @example [new Date(2017, 0, 1, 22, 15), new Date(2017, 0, 1, 23, 45)]
      * @example ["2017-01-01T22:15:00", "2017-01-01T23:45:00"]
      */
-    value?: LooseValue;
+    value?: LooseValue<T>;
     /** `aria-label` for the year input. */
     yearAriaLabel?: string;
     /**
@@ -226,6 +229,7 @@
   } & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'onchange' | 'onfocus'>;
 
   let {
+    adapter,
     amPmAriaLabel,
     autoFocus,
     calendarAriaLabel,
@@ -277,7 +281,9 @@
     yearAriaLabel,
     yearPlaceholder,
     ...otherProps
-  }: DateTimeRangePickerProps = $props();
+  }: DateTimeRangePickerProps<T> = $props();
+
+  if (!adapter) throw new Error('DateTimeRangePicker requires a date adapter.');
 
   let isCalendarOpen = $state<boolean | null>(untrack(() => isCalendarOpenProps));
   let isClockOpen = $state<boolean | null>(untrack(() => isClockOpenProps));
@@ -351,7 +357,7 @@
     closeClock({ reason });
   }
 
-  function onChange(nextValue: Value, shouldCloseWidgets = shouldCloseWidgetsOnSelect) {
+  function onChange(nextValue: Value<T>, shouldCloseWidgets = shouldCloseWidgetsOnSelect) {
     if (shouldCloseWidgets) {
       closeAllWidgets({ reason: 'select' });
     }
@@ -359,33 +365,34 @@
     onChangeProps?.(nextValue);
   }
 
-  function onChangeFrom(nextValueFrom: Date | null, shouldCloseWidgets: boolean) {
-    onChange([nextValueFrom, valueTo ? new Date(valueTo) : null], shouldCloseWidgets);
+  function onChangeFrom(nextValueFrom: T | null, shouldCloseWidgets: boolean) {
+    onChange([nextValueFrom, normalizeDate(valueTo)], shouldCloseWidgets);
   }
 
-  function onChangeTo(nextValueTo: Date | null, shouldCloseWidgets: boolean) {
-    onChange([valueFrom ? new Date(valueFrom) : null, nextValueTo], shouldCloseWidgets);
+  function onChangeTo(nextValueTo: T | null, shouldCloseWidgets: boolean) {
+    onChange([normalizeDate(valueFrom), nextValueTo], shouldCloseWidgets);
   }
 
-  function withTimeOf(date: Date | null, source: string | Date | null | undefined): Date | null {
+  function normalizeDate(value: string | T | null | undefined): T | null {
+    if (value === null || value === undefined || value === '') return null;
+    return typeof value === 'string' ? adapter.date(value) : value;
+  }
+
+  function withTimeOf(date: T | null, source: string | T | null | undefined): T | null {
     if (!source || !date) {
       return date;
     }
 
-    const sourceDate = new Date(source);
-    const result = new Date(date);
-
-    result.setHours(
-      sourceDate.getHours(),
-      sourceDate.getMinutes(),
-      sourceDate.getSeconds(),
-      sourceDate.getMilliseconds(),
-    );
+    const sourceDate = typeof source === 'string' ? adapter.date(source) : source;
+    let result = adapter.setHours(date, adapter.getHours(sourceDate));
+    result = adapter.setMinutes(result, adapter.getMinutes(sourceDate));
+    result = adapter.setSeconds(result, adapter.getSeconds(sourceDate));
+    result = adapter.setMilliseconds(result, adapter.getMilliseconds(sourceDate));
 
     return result;
   }
 
-  function onDateChange(nextValue: Value, shouldCloseWidgets?: boolean) {
+  function onDateChange(nextValue: Value<T>, shouldCloseWidgets?: boolean) {
     // The calendar passes an array of values when selectRange is enabled
     const [rawNextValueFrom, rawNextValueTo] = Array.isArray(nextValue) ? nextValue : [nextValue];
 
@@ -483,6 +490,7 @@
   });
 
   const commonInputProps = $derived({
+    adapter,
     amPmAriaLabel,
     className: `${baseClassName}__inputGroup`,
     customInputsForm,
@@ -548,6 +556,7 @@
 
 {#snippet calendar()}
   <Calendar
+    {adapter}
     {locale}
     {maxDate}
     {minDate}
@@ -560,6 +569,7 @@
 
 {#snippet clock()}
   <Clock
+    {adapter}
     {locale}
     renderMinuteHand={maxDetailIndex > 0}
     renderSecondHand={maxDetailIndex > 1}

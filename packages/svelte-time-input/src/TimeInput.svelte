@@ -3,7 +3,9 @@
 
   import type { ComponentProps } from 'svelte';
   import type { DateAdapter } from 'svelte-date-utils';
-  import type { LooseValuePiece, TimeDetail } from 'svelte-date-input';
+  import type { TimeDetail } from 'svelte-date-input';
+
+  type LooseValuePiece<T> = string | T | null;
 
   type TimeInputProps<T> = Omit<
     ComponentProps<typeof SegmentedInput>,

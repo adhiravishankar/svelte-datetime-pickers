@@ -6,12 +6,12 @@ export type CloseReason = 'buttonClick' | 'escape' | 'outsideAction' | 'select';
 
 export type Detail = 'hour' | 'minute' | 'second';
 
-type LooseValuePiece = string | Date | null;
+type LooseValuePiece<T = Date> = string | T | null;
 
-export type LooseValue = LooseValuePiece | Range<LooseValuePiece>;
+export type LooseValue<T = Date> = LooseValuePiece<T> | Range<LooseValuePiece<T>>;
 
 export type OpenReason = 'buttonClick' | 'focus';
 
-type ValuePiece = Date | null;
+type ValuePiece<T = Date> = T | null;
 
-export type Value = ValuePiece | Range<ValuePiece>;
+export type Value<T = Date> = ValuePiece<T> | Range<ValuePiece<T>>;

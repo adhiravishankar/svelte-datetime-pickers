@@ -3,13 +3,19 @@ import { userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-svelte';
 
 import DateTimeInput from './DateTimeInput.svelte';
+import { AdapterDate } from 'svelte-date-utils';
 
 function getSegment(container: Element, name: string) {
   return container.querySelector<HTMLInputElement>(`[data-segment="${name}"]`);
 }
 
 describe('DateTimeInput', () => {
-  const props = { className: 'input', locale: 'en-US', name: 'datetime' };
+  const props = {
+    adapter: new AdapterDate(),
+    className: 'input',
+    locale: 'en-US',
+    name: 'datetime',
+  };
 
   it('renders a native datetime-local input with the given name', async () => {
     const { container } = await render(DateTimeInput, {

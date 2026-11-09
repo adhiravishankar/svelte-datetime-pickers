@@ -1,5 +1,6 @@
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
+  import { AdapterDate } from 'svelte-date-utils';
 
   import LocaleOptions from './LocaleOptions.svelte';
   import MaxDetailOptions from './MaxDetailOptions.svelte';
@@ -12,6 +13,7 @@
   import type { Detail, LooseValue } from './shared/types.js';
 
   const now = new Date();
+  const adapter = new AdapterDate();
 
   const nineteenNinetyFive = new Date(1995, now.getUTCMonth() + 1, 15, 12);
   const fifteenthOfNextMonth = new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 15, 12);
@@ -58,6 +60,7 @@
         }}
       >
         <DateTimeRangePicker
+          {adapter}
           calendarProps={{
             class: 'myCustomCalendarClassName',
             showNeighboringMonth,

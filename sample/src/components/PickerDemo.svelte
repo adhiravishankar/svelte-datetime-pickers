@@ -1,6 +1,8 @@
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
+  import { AdapterDate } from 'svelte-date-utils';
 
+  const adapter = new AdapterDate();
   type ValuePiece = Date | null;
 
   type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -14,5 +16,5 @@
 
 <section class="Sample__section">
   <h2>svelte-datetimerange-picker</h2>
-  <DateTimeRangePicker onChange={(nextValue) => (value = nextValue)} {value} />
+  <DateTimeRangePicker {adapter} onChange={(nextValue) => (value = nextValue)} {value} />
 </section>

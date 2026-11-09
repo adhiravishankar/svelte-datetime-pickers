@@ -3,13 +3,14 @@ import { userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-svelte';
 
 import TimeInput from './TimeInput.svelte';
+import { AdapterDate } from 'svelte-date-utils';
 
 function getSegment(container: Element, name: string) {
   return container.querySelector<HTMLInputElement>(`[data-segment="${name}"]`);
 }
 
 describe('TimeInput', () => {
-  const props = { className: 'input', locale: 'en-US', name: 'time' };
+  const props = { adapter: new AdapterDate(), className: 'input', locale: 'en-US', name: 'time' };
 
   it('renders a native time input', async () => {
     const { container } = await render(TimeInput, { ...props, value: '22:15' });

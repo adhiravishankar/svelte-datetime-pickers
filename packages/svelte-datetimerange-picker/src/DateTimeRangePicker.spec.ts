@@ -4,6 +4,7 @@ import { render } from 'vitest-browser-svelte';
 import { createRawSnippet } from 'svelte';
 
 import DateTimeRangePicker from './DateTimeRangePicker.svelte';
+import { AdapterDate } from 'svelte-date-utils';
 
 import type { Locator } from 'vite-plus/test/browser';
 
@@ -40,6 +41,7 @@ function textSnippet(html: string) {
 
 describe('DateTimeRangePicker', () => {
   const defaultProps = {
+    adapter: new AdapterDate(),
     amPmAriaLabel: 'amPm',
     dayAriaLabel: 'day',
     hourAriaLabel: 'hour',
