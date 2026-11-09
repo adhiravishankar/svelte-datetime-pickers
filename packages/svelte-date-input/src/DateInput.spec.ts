@@ -4,6 +4,7 @@ import { render } from 'vitest-browser-svelte';
 
 import DateInput from './DateInput.svelte';
 import { parseFormat } from './shared/format.js';
+import { AdapterDate } from 'svelte-date-utils';
 
 function getSegments(container: Element) {
   return [...container.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-segment]')];
@@ -34,7 +35,7 @@ describe('parseFormat', () => {
 });
 
 describe('DateInput', () => {
-  const props = { className: 'input', locale: 'en-US', name: 'date' };
+  const props = { adapter: new AdapterDate(), className: 'input', locale: 'en-US', name: 'date' };
 
   it('renders a native date input with the given name and value', async () => {
     const { container } = await render(DateInput, { ...props, value: new Date(2017, 0, 5) });

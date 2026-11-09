@@ -1,23 +1,24 @@
-<script lang="ts">
+<script lang="ts" generics="T">
   import './Calendar.css';
 
-  import { getMonthEnd, getMonthStart, getUserLocale } from 'svelte-date-utils';
+  import { createDateUtils, getUserLocale } from 'svelte-date-utils';
+  import type { DateAdapter } from 'svelte-date-utils';
   import { untrack } from 'svelte';
 
   import Navigation from './Navigation.svelte';
   import {
-    addDays,
-    getBegin,
-    getBeginOfWeek,
+    addDays as addAdapterDays,
+    getBegin as getDateBegin,
+    getBeginOfWeek as getAdapterBeginOfWeek,
     getCalendarType,
-    getDaysBetween,
-    getEnd,
-    getRange,
-    getWeekNumber,
-    isRangeWithinRange,
-    isWeekend,
-    normalizeValue,
-    shiftDate,
+    getDaysBetween as getAdapterDaysBetween,
+    getEnd as getDateEnd,
+    getRange as getDateRange,
+    getWeekNumber as getAdapterWeekNumber,
+    isRangeWithinRange as isDateRangeWithinRange,
+    isWeekend as isAdapterWeekend,
+    normalizeValue as normalizeDateValue,
+    shiftDate as shiftAdapterDate,
     tileTypes,
     views,
   } from './shared/dates.js';
@@ -41,6 +42,7 @@
     NavigationAction,
     NavigationLabelArgs,
     Range,
+    DateType,
     ReturnValue,
     TileArgs,
     Value,
@@ -48,11 +50,13 @@
     ViewCallbackProperties,
   } from './shared/types.js';
 
-  type CalendarProps = {
+  type CalendarProps<T> = {
+    /** Date adapter used to parse, compare, format and navigate date values. Required. */
+    adapter: DateAdapter<T>;
     /**
      * The beginning of the period that shall be displayed. Can be bound.
      */
-    activeStartDate?: Date | null;
+    activeStartDate?: T | null;
     /**
      * Whether a partial range (only the first end selected) should be passed to `onChange`. Only applies when `selectRange` is set.
      *
@@ -70,18 +74,18 @@
     /**
      * The beginning of the period that shall be displayed by default.
      */
-    defaultActiveStartDate?: Date;
+    defaultActiveStartDate?: T;
     /**
      * Calendar view that shall be displayed by default.
      */
     defaultView?: View;
-    formatDay?: Formatter;
-    formatLongDate?: Formatter;
-    formatMonth?: Formatter;
-    formatMonthYear?: Formatter;
-    formatShortWeekday?: Formatter;
-    formatWeekday?: Formatter;
-    formatYear?: Formatter;
+    formatDay?: Formatter<T>;
+    formatLongDate?: Formatter<T>;
+    formatMonth?: Formatter<T>;
+    formatMonthYear?: Formatter<T>;
+    formatShortWeekday?: Formatter<T>;
+    formatWeekday?: Formatter<T>;
+    formatYear?: Formatter<T>;
     /**
      * Whether to go to the beginning of the selected range when it changes.
      *
@@ -95,7 +99,7 @@
     /**
      * Maximum date that the user can select. Periods partially overlapped by `maxDate` will also be selectable.
      */
-    maxDate?: Date;
+    maxDate?: T;
     /**
      * The most detailed view that the user shall see. Clicking an item in this view selects a date.
      *
@@ -105,7 +109,7 @@
     /**
      * Minimum date that the user can select. Periods partially overlapped by `minDate` will also be selectable.
      */
-    minDate?: Date;
+    minDate?: T;
     /**
      * The least detailed view that the user shall see.
      *
@@ -117,7 +121,7 @@
     /**
      * Custom content of the navigation label.
      */
-    navigationLabel?: Snippet<[NavigationLabelArgs]>;
+    navigationLabel?: Snippet<[NavigationLabelArgs<T>]>;
     next2AriaLabel?: string;
     /**
      * Content of the "jump forward" button. Setting it to `null` hides the button.
@@ -132,18 +136,18 @@
      * @default '›'
      */
     nextLabel?: string | null;
-    onActiveStartDateChange?: (args: ViewCallbackProperties) => void;
+    onActiveStartDateChange?: (args: ViewCallbackProperties<T>) => void;
     /**
      * Function called when the user selects a value. When `selectRange` is set, receives a `[from, to]` array.
      */
-    onChange?: (value: Value, event: MouseEvent) => void;
-    onClickDay?: (value: Date, event: MouseEvent) => void;
-    onClickDecade?: (value: Date, event: MouseEvent) => void;
-    onClickMonth?: (value: Date, event: MouseEvent) => void;
-    onClickYear?: (value: Date, event: MouseEvent) => void;
-    onDrillDown?: (args: ViewCallbackProperties) => void;
-    onDrillUp?: (args: ViewCallbackProperties) => void;
-    onViewChange?: (args: ViewCallbackProperties) => void;
+    onChange?: (value: Value<T>, event: MouseEvent) => void;
+    onClickDay?: (value: T, event: MouseEvent) => void;
+    onClickDecade?: (value: T, event: MouseEvent) => void;
+    onClickMonth?: (value: T, event: MouseEvent) => void;
+    onClickYear?: (value: T, event: MouseEvent) => void;
+    onDrillDown?: (args: ViewCallbackProperties<T>) => void;
+    onDrillUp?: (args: ViewCallbackProperties<T>) => void;
+    onViewChange?: (args: ViewCallbackProperties<T>) => void;
     prev2AriaLabel?: string;
     /**
      * Content of the "jump backward" button. Setting it to `null` hides the button.
@@ -194,47 +198,48 @@
     /**
      * Class name(s) added to tiles. Can be a function receiving `{ activeStartDate, date, view }`.
      */
-    tileClassName?: ClassValue | ((args: TileArgs) => ClassValue);
+    tileClassName?: ClassValue | ((args: TileArgs<T>) => ClassValue);
     /**
      * Custom content rendered inside tiles.
      */
-    tileContent?: Snippet<[TileArgs]>;
+    tileContent?: Snippet<[TileArgs<T>]>;
     /**
      * Function that returns `true` for dates that should be disabled.
      */
-    tileDisabled?: (args: TileArgs) => boolean;
+    tileDisabled?: (args: TileArgs<T>) => boolean;
     /**
      * Calendar value. Can be a single date or a range.
      */
-    value?: LooseValue;
+    value?: LooseValue<T>;
     /**
      * Currently displayed view. Can be bound.
      */
     view?: View;
   };
 
-  type TileInfo = {
+  type TileInfo<T> = {
     ariaLabel?: string;
     classes: ClassValue[];
-    date: Date;
+    date: T;
     disabled: boolean;
     label: string;
   };
 
   let {
+    adapter,
     activeStartDate = $bindable(),
     allowPartialRange = false,
     calendarType,
     class: className,
     defaultActiveStartDate,
     defaultView,
-    formatDay = defaultFormatDay,
-    formatLongDate = defaultFormatLongDate,
-    formatMonth = defaultFormatMonth,
-    formatMonthYear = defaultFormatMonthYear,
-    formatShortWeekday = defaultFormatShortWeekday,
-    formatWeekday = defaultFormatWeekday,
-    formatYear = defaultFormatYear,
+    formatDay = defaultFormatDay as unknown as Formatter<T>,
+    formatLongDate = defaultFormatLongDate as unknown as Formatter<T>,
+    formatMonth = defaultFormatMonth as unknown as Formatter<T>,
+    formatMonthYear = defaultFormatMonthYear as unknown as Formatter<T>,
+    formatShortWeekday = defaultFormatShortWeekday as unknown as Formatter<T>,
+    formatWeekday = defaultFormatWeekday as unknown as Formatter<T>,
+    formatYear = defaultFormatYear as unknown as Formatter<T>,
     goToRangeStartOnSelect = true,
     locale,
     maxDate,
@@ -274,10 +279,37 @@
     tileDisabled,
     value,
     view = $bindable(),
-  }: CalendarProps = $props();
+  }: CalendarProps<T> = $props();
+
+  untrack(() => {
+    if (!adapter) throw new Error('Calendar requires a date adapter.');
+  });
+
+  const dateUtils = createDateUtils(adapter);
+  const getBegin = (type: DateType, date: T) => getDateBegin(adapter, type, date);
+  const getEnd = (type: DateType, date: T) => getDateEnd(adapter, type, date);
+  const getRange = (type: DateType, date: T) => getDateRange(adapter, type, date);
+  const normalizeValue = (value: LooseValue<T> | undefined) => normalizeDateValue(adapter, value);
+  const compareBefore = (a: T, b: T) => adapter.isBefore(a, b);
+  const compareAfter = (a: T, b: T) => adapter.isAfter(a, b);
+  const rangeWithin = (a: Range<T>, b: Range<T>) => isDateRangeWithinRange(adapter, a, b);
+  const addDays = (date: T, days: number) => addAdapterDays(adapter, date, days);
+  const getBeginOfWeek = (date: T, type: CalendarType) => getAdapterBeginOfWeek(adapter, date, type);
+  const getDaysBetween = (from: T, to: T) => getAdapterDaysBetween(adapter, from, to);
+  const getWeekNumber = (date: T, type: CalendarType) => getAdapterWeekNumber(adapter, date, type);
+  const isWeekend = (date: T, type: CalendarType) => isAdapterWeekend(adapter, date, type);
+  const shiftDate = (view: View, date: T, amount: number, double = false) =>
+    shiftAdapterDate(adapter, view, date, amount, double);
+  const isRangeWithinRange = rangeWithin;
+  const dateAt = (year: number, month: number, day = 1) =>
+    adapter.setDate(adapter.setMonth(adapter.setYear(adapter.date(), year), month), day);
 
   const effectiveLocale = $derived(locale ?? getUserLocale());
   const effectiveCalendarType = $derived(calendarType ?? getCalendarType(effectiveLocale));
+  const formatValue = (formatter: Formatter<T>, defaultFormatter: Formatter<Date>, date: T) =>
+    formatter === (defaultFormatter as unknown as Formatter<T>)
+      ? defaultFormatter(effectiveLocale, adapter.toJsDate(date))
+      : formatter(effectiveLocale, date);
 
   const allowedViews = $derived(
     views.slice(
@@ -296,19 +328,19 @@
       : (allowedViews[0] ?? maxDetail);
   }
 
-  function clampStart(date: Date, forView: View): Date {
+  function clampStart(date: T, forView: View): T {
     let result = date;
 
     if (minDate) {
       const min = getBegin(forView, minDate);
-      if (result < min) {
+      if (compareBefore(result, min)) {
         result = min;
       }
     }
 
     if (maxDate) {
       const max = getBegin(forView, maxDate);
-      if (result > max) {
+      if (compareAfter(result, max)) {
         result = max;
       }
     }
@@ -322,26 +354,26 @@
       const initialView = resolveView(view ?? defaultView ?? maxDetail);
 
       activeStartDate = clampStart(
-        getBegin(initialView, defaultActiveStartDate ?? from ?? new Date()),
+        getBegin(initialView, defaultActiveStartDate ?? from ?? adapter.date()),
         initialView,
       );
     });
   }
 
   const currentView = $derived(resolveView(view ?? defaultView ?? maxDetail));
-  const currentStart = $derived(activeStartDate ?? getBegin(currentView, new Date()));
+  const currentStart = $derived(activeStartDate ?? getBegin(currentView, adapter.date()));
   const viewIndex = $derived(allowedViews.indexOf(currentView));
   const tileType = $derived(tileTypes[currentView]);
   const valueType = $derived(tileTypes[maxDetail]);
 
-  let pendingStart = $state<Date | null>(null);
-  let hover = $state<Date | null>(null);
+  let pendingStart = $state<T | null>(null);
+  let hover = $state<T | null>(null);
 
-  let previousFromKey: number | null | undefined;
+  let previousFromKey: string | null | undefined;
 
   $effect(() => {
     const [from] = normalizeValue(value);
-    const fromKey = from ? from.getTime() : null;
+    const fromKey = from ? dateUtils.getISOLocalDateTime(from) : null;
 
     // Reading `to` so that changing only the end of the range resets selection in progress too
     void normalizeValue(value)[1];
@@ -363,21 +395,21 @@
     });
   });
 
-  function callbackProperties(action: NavigationAction, forView: View, start: Date | null) {
+  function callbackProperties(action: NavigationAction, forView: View, start: T | null) {
     return {
       action,
       activeStartDate: start,
       value,
       view: forView,
-    } satisfies ViewCallbackProperties;
+    } satisfies ViewCallbackProperties<T>;
   }
 
-  function setStart(next: Date, action: NavigationAction) {
+  function setStart(next: T, action: NavigationAction) {
     activeStartDate = next;
     onActiveStartDateChange?.(callbackProperties(action, currentView, next));
   }
 
-  function setView(next: View, nextStart: Date, action: NavigationAction) {
+  function setView(next: View, nextStart: T, action: NavigationAction) {
     view = next;
     activeStartDate = nextStart;
 
@@ -401,7 +433,7 @@
     }
   }
 
-  function drillDown(date: Date) {
+  function drillDown(date: T) {
     const nextView = allowedViews[viewIndex + 1];
 
     if (nextView) {
@@ -409,7 +441,7 @@
     }
   }
 
-  function select(date: Date, event: MouseEvent) {
+  function select(date: T, event: MouseEvent) {
     if (selectRange) {
       if (!pendingStart) {
         pendingStart = date;
@@ -422,7 +454,9 @@
         return;
       }
 
-      const [from, to] = pendingStart <= date ? [pendingStart, date] : [date, pendingStart];
+      const [from, to] = compareBefore(pendingStart, date)
+        ? [pendingStart, date]
+        : [date, pendingStart];
 
       pendingStart = null;
       hover = null;
@@ -440,7 +474,7 @@
     }
   }
 
-  function onTileClick(date: Date, event: MouseEvent) {
+  function onTileClick(date: T, event: MouseEvent) {
     const handler = {
       century: onClickDecade,
       decade: onClickYear,
@@ -462,27 +496,27 @@
   const prev2Start = $derived(shiftDate(currentView, currentStart, -1, true));
   const next2Start = $derived(shiftDate(currentView, currentStart, 1, true));
 
-  const prevDisabled = $derived(minDate ? getEnd(currentView, prevStart) < minDate : false);
-  const nextDisabled = $derived(maxDate ? nextStart > maxDate : false);
-  const prev2Disabled = $derived(minDate ? getEnd(currentView, prev2Start) < minDate : false);
-  const next2Disabled = $derived(maxDate ? next2Start > maxDate : false);
+  const prevDisabled = $derived(minDate ? compareBefore(getEnd(currentView, prevStart), minDate) : false);
+  const nextDisabled = $derived(maxDate ? compareAfter(nextStart, maxDate) : false);
+  const prev2Disabled = $derived(minDate ? compareBefore(getEnd(currentView, prev2Start), minDate) : false);
+  const next2Disabled = $derived(maxDate ? compareAfter(next2Start, maxDate) : false);
 
   const navigationLabelText = $derived.by(() => {
     switch (currentView) {
       case 'century':
       case 'decade': {
         const [from, to] = getRange(currentView, currentStart);
-        return `${formatYear(effectiveLocale, from)} – ${formatYear(effectiveLocale, to)}`;
+        return `${formatValue(formatYear, defaultFormatYear, from)} – ${formatValue(formatYear, defaultFormatYear, to)}`;
       }
       case 'year':
-        return formatYear(effectiveLocale, currentStart);
+        return formatValue(formatYear, defaultFormatYear, currentStart);
       case 'month':
-        return formatMonthYear(effectiveLocale, currentStart);
+        return formatValue(formatMonthYear, defaultFormatMonthYear, currentStart);
     }
   });
 
   // Tiles
-  const selection = $derived.by((): Range<Date> | null => {
+  const selection = $derived.by((): Range<T> | null => {
     if (pendingStart) {
       return [getBegin(valueType, pendingStart), getEnd(valueType, pendingStart)];
     }
@@ -492,26 +526,29 @@
     return from ? [getBegin(valueType, from), getEnd(valueType, to ?? from)] : null;
   });
 
-  const hoverRange = $derived.by((): Range<Date> | null => {
+  const hoverRange = $derived.by((): Range<T> | null => {
     if (!selectRange || !pendingStart || !hover) {
       return null;
     }
 
-    const [from, to] = pendingStart <= hover ? [pendingStart, hover] : [hover, pendingStart];
+    const [from, to] = compareBefore(pendingStart, hover)
+      ? [pendingStart, hover]
+      : [hover, pendingStart];
 
     return [getBegin(valueType, from), getEnd(valueType, to)];
   });
 
-  function getTileClasses(date: Date, base: string, modifiers: string[]): ClassValue[] {
+  function getTileClasses(date: T, base: string, modifiers: string[]): ClassValue[] {
     const tileRange = getRange(tileType, date);
     const classes: ClassValue[] = [
       'svelte-calendar__tile',
       base,
       ...modifiers.map((m) => `${base}--${m}`),
     ];
-    const contains = (range: Range<Date>, point: Date) => isRangeWithinRange(range, [point, point]);
+    const contains = (range: Range<T>, point: T) => isRangeWithinRange(range, [point, point]);
 
-    if (isRangeWithinRange(tileRange, [new Date(), new Date()])) {
+    const now = adapter.date();
+    if (isRangeWithinRange(tileRange, [now, now])) {
       classes.push('svelte-calendar__tile--now');
     }
 
@@ -569,10 +606,10 @@
     return classes;
   }
 
-  function isTileDisabled(date: Date): boolean {
+  function isTileDisabled(date: T): boolean {
     const [from, to] = getRange(tileType, date);
 
-    if ((minDate && to < minDate) || (maxDate && from > maxDate)) {
+    if ((minDate && compareBefore(to, minDate)) || (maxDate && compareAfter(from, maxDate))) {
       return true;
     }
 
@@ -580,12 +617,12 @@
   }
 
   function makeTile(
-    date: Date,
+    date: T,
     label: string,
     base: string,
     modifiers: string[],
     ariaLabel?: string,
-  ): TileInfo {
+  ): TileInfo<T> {
     return {
       ariaLabel,
       classes: getTileClasses(date, base, modifiers),
@@ -600,15 +637,15 @@
       return null;
     }
 
-    const monthStart = getMonthStart(currentStart);
+    const monthStart = dateUtils.getMonthStart(currentStart);
     const neighbors = showNeighboringMonth || showFixedNumberOfWeeks;
     const weekBegin = getBeginOfWeek(monthStart, effectiveCalendarType);
     const first = neighbors ? weekBegin : monthStart;
     const last = showFixedNumberOfWeeks
       ? addDays(weekBegin, 41)
       : neighbors
-        ? addDays(getBeginOfWeek(getMonthEnd(monthStart), effectiveCalendarType), 6)
-        : getMonthEnd(monthStart);
+        ? addDays(getBeginOfWeek(dateUtils.getMonthEnd(monthStart), effectiveCalendarType), 6)
+        : dateUtils.getMonthEnd(monthStart);
     const count = getDaysBetween(first, last) + 1;
     const blanks = neighbors ? 0 : getDaysBetween(weekBegin, monthStart);
     const rows = Math.ceil((blanks + count) / 7);
@@ -622,16 +659,16 @@
         if (isWeekend(date, effectiveCalendarType)) {
           modifiers.push('weekend');
         }
-        if (date.getMonth() !== monthStart.getMonth()) {
+        if (adapter.getMonth(date) !== adapter.getMonth(monthStart)) {
           modifiers.push('neighboringMonth');
         }
 
         return makeTile(
           date,
-          formatDay(effectiveLocale, date),
+          formatValue(formatDay, defaultFormatDay, date),
           'svelte-calendar__month-view__days__day',
           modifiers,
-          formatLongDate(effectiveLocale, date),
+          formatValue(formatLongDate, defaultFormatLongDate, date),
         );
       }),
       weekdays: Array.from({ length: 7 }, (_, index) => addDays(weekBegin, index)),
@@ -641,20 +678,20 @@
     };
   });
 
-  const otherTiles = $derived.by((): TileInfo[] => {
-    const year = currentStart.getFullYear();
+  const otherTiles = $derived.by((): TileInfo<T>[] => {
+    const year = adapter.getYear(currentStart);
 
     switch (currentView) {
       case 'year':
         return Array.from({ length: 12 }, (_, index) => {
-          const date = new Date(year, index, 1);
+          const date = dateAt(year, index, 1);
 
           return makeTile(
             date,
-            formatMonth(effectiveLocale, date),
+            formatValue(formatMonth, defaultFormatMonth, date),
             'svelte-calendar__year-view__months__month',
             [],
-            formatMonthYear(effectiveLocale, date),
+            formatValue(formatMonthYear, defaultFormatMonthYear, date),
           );
         });
       case 'decade': {
@@ -662,11 +699,11 @@
         const to = showNeighboringDecade ? 11 : 9;
 
         return Array.from({ length: to - from + 1 }, (_, index) => {
-          const date = new Date(year + from + index, 0, 1);
+          const date = dateAt(year + from + index, 0, 1);
 
           return makeTile(
             date,
-            formatYear(effectiveLocale, date),
+            formatValue(formatYear, defaultFormatYear, date),
             'svelte-calendar__decade-view__years__year',
             index + from < 0 || index + from > 9 ? ['neighboringDecade'] : [],
           );
@@ -678,12 +715,12 @@
 
         return Array.from({ length: to - from + 1 }, (_, index) => {
           const offset = index + from;
-          const date = new Date(year + offset * 10, 0, 1);
-          const end = new Date(year + offset * 10 + 9, 0, 1);
+          const date = dateAt(year + offset * 10, 0, 1);
+          const end = dateAt(year + offset * 10 + 9, 0, 1);
 
           return makeTile(
             date,
-            `${formatYear(effectiveLocale, date)} – ${formatYear(effectiveLocale, end)}`,
+            `${formatValue(formatYear, defaultFormatYear, date)} – ${formatValue(formatYear, defaultFormatYear, end)}`,
             'svelte-calendar__century-view__decades__decade',
             offset < 0 || offset > 9 ? ['neighboringCentury'] : [],
           );
@@ -695,7 +732,7 @@
   });
 </script>
 
-{#snippet tile(info: TileInfo)}
+{#snippet tile(info: TileInfo<T>)}
   <button
     class={info.classes}
     disabled={info.disabled}
@@ -717,7 +754,7 @@
 
 {#snippet defaultLabel()}
   {#if navigationLabel}
-    {@render navigationLabel({
+      {@render navigationLabel({
       date: currentStart,
       label: navigationLabelText,
       locale: effectiveLocale,
@@ -772,13 +809,13 @@
         {/if}
         <div class="svelte-calendar__month-view__body">
           <div class="svelte-calendar__month-view__weekdays">
-            {#each monthLayout.weekdays as weekday (weekday.getTime())}
+            {#each monthLayout.weekdays as weekday (dateUtils.getISOLocalDateTime(weekday))}
               <div class="svelte-calendar__month-view__weekdays__weekday">
                 <abbr
-                  aria-label={formatWeekday(effectiveLocale, weekday)}
-                  title={formatWeekday(effectiveLocale, weekday)}
+                  aria-label={formatValue(formatWeekday, defaultFormatWeekday, weekday)}
+                  title={formatValue(formatWeekday, defaultFormatWeekday, weekday)}
                 >
-                  {formatShortWeekday(effectiveLocale, weekday)}
+                  {formatValue(formatShortWeekday, defaultFormatShortWeekday, weekday)}
                 </abbr>
               </div>
             {/each}
@@ -787,7 +824,7 @@
             {#each { length: monthLayout.blanks } as _, index (index)}
               <div aria-hidden="true"></div>
             {/each}
-            {#each monthLayout.tiles as info (info.date.getTime())}
+            {#each monthLayout.tiles as info (dateUtils.getISOLocalDateTime(info.date))}
               {@render tile(info)}
             {/each}
           </div>
@@ -802,7 +839,7 @@
               ? 'years'
               : 'decades'}"
         >
-          {#each otherTiles as info (info.date.getTime())}
+          {#each otherTiles as info (dateUtils.getISOLocalDateTime(info.date))}
             {@render tile(info)}
           {/each}
         </div>

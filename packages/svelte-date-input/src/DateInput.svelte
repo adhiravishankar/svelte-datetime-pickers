@@ -1,11 +1,13 @@
-<script lang="ts">
+<script lang="ts" generics="T">
   import SegmentedInput from './SegmentedInput.svelte';
 
   import type { ComponentProps } from 'svelte';
+  import type { DateAdapter } from 'svelte-date-utils';
   import type { DateDetail, LooseValuePiece } from './shared/types.js';
 
-  type DateInputProps = Omit<
+  type DateInputProps<T> = Omit<
     ComponentProps<typeof SegmentedInput>,
+    | 'adapter'
     | 'hourAriaLabel'
     | 'hourPlaceholder'
     | 'kind'
@@ -18,21 +20,22 @@
     | 'amPmAriaLabel'
     | 'value'
   > & {
+    adapter: DateAdapter<T>;
     /**
      * The most detailed field the user shall see.
      *
      * @default 'month'
      */
     maxDetail?: DateDetail;
-    onChange?: (value: Date | null, shouldCloseWidgets: boolean) => void;
-    value?: LooseValuePiece;
+    onChange?: (value: T | null, shouldCloseWidgets: boolean) => void;
+    value?: LooseValuePiece<T>;
   };
 
-  let { onChange, ...props }: DateInputProps = $props();
+  let { onChange, ...props }: DateInputProps<T> = $props();
 </script>
 
 <SegmentedInput
   {...props}
   kind="date"
-  onChange={(value, shouldCloseWidgets) => onChange?.(value as Date | null, shouldCloseWidgets)}
+  onChange={(value, shouldCloseWidgets) => onChange?.(value as T | null, shouldCloseWidgets)}
 />

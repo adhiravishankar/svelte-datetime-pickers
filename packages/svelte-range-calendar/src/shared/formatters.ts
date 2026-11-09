@@ -12,7 +12,7 @@ function getFormatter(locale: string | undefined, options: Intl.DateTimeFormatOp
   return formatter;
 }
 
-export type Formatter = (locale: string | undefined, date: Date) => string;
+export type Formatter<T = Date> = (locale: string | undefined, date: T) => string;
 
 export const formatDay: Formatter = (locale, date) =>
   getFormatter(locale, { day: 'numeric' }).format(date);

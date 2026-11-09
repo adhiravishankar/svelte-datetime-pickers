@@ -1,5 +1,6 @@
-<script lang="ts">
-  import { getDaysInMonth, getUserLocale } from 'svelte-date-utils';
+<script lang="ts" generics="T">
+  import { getUserLocale } from 'svelte-date-utils';
+  import type { DateAdapter } from 'svelte-date-utils';
   import { onMount, untrack } from 'svelte';
 
   import Divider from './Divider.svelte';
@@ -25,7 +26,9 @@
   import type { Fields } from './shared/fields.js';
   import type { InputDetail, InputKind, LooseValuePiece, SegmentName } from './shared/types.js';
 
-  type SegmentedInputProps = {
+  type SegmentedInputProps<T> = {
+    /** Date adapter used for parsing and manipulating values. Required. */
+    adapter: DateAdapter<T>;
     /** `aria-label` for the AM/PM select. */
     amPmAriaLabel?: string;
     /** Automatically focuses the first field on mount. */
@@ -48,10 +51,10 @@
     /** Which kind of value the input edits. */
     kind: InputKind;
     locale?: string;
-    maxDate?: Date;
+    maxDate?: T;
     /** The most detailed field the user shall see. */
     maxDetail?: InputDetail;
-    minDate?: Date;
+    minDate?: T;
     minuteAriaLabel?: string;
     /** @default '--' */
     minutePlaceholder?: string;
@@ -62,7 +65,7 @@
     name?: string;
     nativeInputAriaLabel?: string;
     /** Called when the value changes. For the `time` kind, the value is an `HH:mm[:ss]` string. */
-    onChange?: (value: Date | string | null, shouldCloseWidgets: boolean) => void;
+    onChange?: (value: T | string | null, shouldCloseWidgets: boolean) => void;
     /** Called when the fields contain an incomplete or invalid value. */
     onInvalidChange?: () => void;
     required?: boolean;
@@ -70,13 +73,14 @@
     /** @default '--' */
     secondPlaceholder?: string;
     showLeadingZeros?: boolean;
-    value?: LooseValuePiece;
+    value?: LooseValuePiece<T>;
     yearAriaLabel?: string;
     /** @default '----' */
     yearPlaceholder?: string;
   };
 
   let {
+    adapter,
     amPmAriaLabel,
     autoFocus,
     className = '',
@@ -107,7 +111,9 @@
     value,
     yearAriaLabel,
     yearPlaceholder = '----',
-  }: SegmentedInputProps = $props();
+  }: SegmentedInputProps<T> = $props();
+
+  if (!adapter) throw new Error('SegmentedInput requires a date adapter.');
 
   let root = $state<HTMLDivElement>();
 
@@ -134,13 +140,11 @@
 
   let fields = $state<Fields>(emptyFields());
 
-  const dateValue = $derived(valueToDate(value, kind));
-  // Primitive key, so that parents passing equal-but-new Date objects don't reset the fields
+  const dateValue = $derived(valueToDate(adapter, value, kind));
+  // Stable primitive key so equal immutable values do not reset the fields.
   const valueKey = $derived(
     dateValue
-      ? kind === 'time'
-        ? dateValue.getHours() * 3600 + dateValue.getMinutes() * 60 + dateValue.getSeconds()
-        : dateValue.getTime()
+      ? adapter.formatByString(dateValue, 'yyyy-MM-dd HH:mm:ss.SSS')
       : null,
   );
 
@@ -149,18 +153,19 @@
     const twelveHours = use12Hours;
 
     untrack(() => {
-      fields = dateValue ? fieldsFromDate(dateValue, twelveHours) : emptyFields();
+      fields = dateValue ? fieldsFromDate(adapter, dateValue, twelveHours) : emptyFields();
     });
   });
 
-  function emit(date: Date): Date | string {
-    return kind === 'time' ? formatTime(date, detail) : date;
+  function emit(date: T): T | string {
+    return kind === 'time' ? formatTime(adapter, date, detail) : date;
   }
 
   function process(nextFields: Fields) {
     fields = nextFields;
 
     const result = composeDate({
+      adapter,
       detail,
       fields: nextFields,
       max: kind === 'time' ? undefined : maxDate,
@@ -188,10 +193,10 @@
   }
 
   function onNativeChange(event: Event & { currentTarget: HTMLInputElement }) {
-    const date = fromNativeValue(event.currentTarget.value, kind);
+    const date = fromNativeValue(adapter, event.currentTarget.value, kind);
 
     if (date) {
-      fields = fieldsFromDate(date, use12Hours);
+      fields = fieldsFromDate(adapter, date, use12Hours);
       onChange?.(emit(date), false);
     } else {
       fields = emptyFields();
@@ -220,12 +225,12 @@
   const nativeStep = $derived(
     kind === 'date' ? undefined : detail === 'second' ? 1 : detail === 'hour' ? 3600 : 60,
   );
-  const nativeValue = $derived(dateValue ? toNativeValue(dateValue, kind, detail) : '');
+  const nativeValue = $derived(dateValue ? toNativeValue(adapter, dateValue, kind, detail) : '');
   const nativeMin = $derived(
-    minDate && kind !== 'time' ? toNativeValue(minDate, kind, detail) : undefined,
+    minDate && kind !== 'time' ? toNativeValue(adapter, minDate, kind, detail) : undefined,
   );
   const nativeMax = $derived(
-    maxDate && kind !== 'time' ? toNativeValue(maxDate, kind, detail) : undefined,
+    maxDate && kind !== 'time' ? toNativeValue(adapter, maxDate, kind, detail) : undefined,
   );
 
   const ariaLabels = $derived<Record<SegmentName, string | undefined>>({
@@ -254,9 +259,9 @@
     switch (segment) {
       case 'year':
         return {
-          max: maxDate && kind !== 'time' ? maxDate.getFullYear() : 275760,
+          max: maxDate && kind !== 'time' ? adapter.getYear(maxDate) : 275760,
           maxLength: 4,
-          min: minDate && kind !== 'time' ? minDate.getFullYear() : 1,
+          min: minDate && kind !== 'time' ? adapter.getYear(minDate) : 1,
         };
       case 'month':
         return { max: 12, maxLength: 2, min: 1 };
@@ -265,7 +270,9 @@
         const month = Number(fields.month);
         const daysInMonth =
           fields.year && fields.month && month >= 1 && month <= 12
-            ? getDaysInMonth(new Date(year, month - 1, 1))
+            ? adapter.getDaysInMonth(
+                adapter.setMonth(adapter.setYear(adapter.date(), year), month - 1),
+              )
             : 31;
 
         return { max: daysInMonth, maxLength: 2, min: 1 };

@@ -8,13 +8,13 @@ export type Detail = View;
 
 export type DateType = View | 'day';
 
-export type LooseValuePiece = string | Date | null;
+export type LooseValuePiece<T = Date> = string | T | null;
 
-export type LooseValue = LooseValuePiece | Range<LooseValuePiece>;
+export type LooseValue<T = Date> = LooseValuePiece<T> | Range<LooseValuePiece<T>>;
 
-export type ValuePiece = Date | null;
+export type ValuePiece<T = Date> = T | null;
 
-export type Value = ValuePiece | Range<ValuePiece>;
+export type Value<T = Date> = ValuePiece<T> | Range<ValuePiece<T>>;
 
 export type ReturnValue = 'start' | 'end' | 'range';
 
@@ -27,21 +27,21 @@ export type NavigationAction =
   | 'drillUp'
   | 'drillDown';
 
-export type ViewCallbackProperties = {
+export type ViewCallbackProperties<T = Date> = {
   action: NavigationAction;
-  activeStartDate: Date | null;
-  value: LooseValue | undefined;
+  activeStartDate: T | null;
+  value: LooseValue<T> | undefined;
   view: View;
 };
 
-export type TileArgs = {
-  activeStartDate: Date;
-  date: Date;
+export type TileArgs<T = Date> = {
+  activeStartDate: T;
+  date: T;
   view: View;
 };
 
-export type NavigationLabelArgs = {
-  date: Date;
+export type NavigationLabelArgs<T = Date> = {
+  date: T;
   label: string;
   locale: string | undefined;
   view: View;

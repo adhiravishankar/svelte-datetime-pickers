@@ -1,11 +1,13 @@
-<script lang="ts">
+<script lang="ts" generics="T">
   import { SegmentedInput } from 'svelte-date-input';
 
   import type { ComponentProps } from 'svelte';
+  import type { DateAdapter } from 'svelte-date-utils';
   import type { LooseValuePiece, TimeDetail } from 'svelte-date-input';
 
-  type TimeInputProps = Omit<
+  type TimeInputProps<T> = Omit<
     ComponentProps<typeof SegmentedInput>,
+    | 'adapter'
     | 'dayAriaLabel'
     | 'dayPlaceholder'
     | 'kind'
@@ -19,6 +21,7 @@
     | 'yearAriaLabel'
     | 'yearPlaceholder'
   > & {
+    adapter: DateAdapter<T>;
     /**
      * The most detailed field the user shall see.
      *
@@ -32,10 +35,10 @@
     /**
      * Time as an `HH:mm[:ss]` string or a Date.
      */
-    value?: LooseValuePiece;
+    value?: LooseValuePiece<T>;
   };
 
-  let { onChange, ...props }: TimeInputProps = $props();
+  let { onChange, ...props }: TimeInputProps<T> = $props();
 </script>
 
 <SegmentedInput

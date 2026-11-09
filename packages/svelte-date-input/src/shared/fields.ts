@@ -1,4 +1,5 @@
-import { getISOLocalDate, getISOLocalDateTime } from 'svelte-date-utils';
+import { createDateUtils } from 'svelte-date-utils';
+import type { DateAdapter } from 'svelte-date-utils';
 
 import type { InputDetail, InputKind, LooseValuePiece, SegmentName } from './types.js';
 
@@ -29,126 +30,102 @@ export function emptyFields(): Fields {
   return { amPm: '', day: '', hour: '', minute: '', month: '', second: '', year: '' };
 }
 
-export function fieldsFromDate(date: Date, use12Hours: boolean): Fields {
-  const hours = date.getHours();
-
+export function fieldsFromDate<T>(adapter: DateAdapter<T>, date: T, use12Hours: boolean): Fields {
+  const hours = adapter.getHours(date);
   return {
     amPm: hours >= 12 ? 'pm' : 'am',
-    day: String(date.getDate()),
+    day: String(adapter.getDate(date)),
     hour: String(use12Hours ? hours % 12 || 12 : hours),
-    minute: String(date.getMinutes()),
-    month: String(date.getMonth() + 1),
-    second: String(date.getSeconds()),
-    year: String(date.getFullYear()),
+    minute: String(adapter.getMinutes(date)),
+    month: String(adapter.getMonth(date) + 1),
+    second: String(adapter.getSeconds(date)),
+    year: String(adapter.getYear(date)),
   };
 }
 
-function floorTo(date: Date, detail: InputDetail): Date {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-
-  switch (detail) {
-    case 'year':
-      return new Date(year, 0, 1);
-    case 'month':
-      return new Date(year, month, day);
-    case 'hour':
-      return new Date(year, month, day, date.getHours());
-    case 'minute':
-      return new Date(year, month, day, date.getHours(), date.getMinutes());
-    case 'second':
-      return new Date(year, month, day, date.getHours(), date.getMinutes(), date.getSeconds());
-  }
+function floorTo<T>(adapter: DateAdapter<T>, date: T, detail: InputDetail): T {
+  let result = adapter.setDate(
+    adapter.setMonth(adapter.setYear(date, adapter.getYear(date)), adapter.getMonth(date)),
+    adapter.getDate(date),
+  );
+  if (detail === 'year') result = adapter.setMonth(adapter.setDate(result, 1), 0);
+  if (detail === 'hour' || detail === 'minute' || detail === 'second')
+    result = adapter.setHours(result, adapter.getHours(date));
+  if (detail === 'minute' || detail === 'second')
+    result = adapter.setMinutes(result, adapter.getMinutes(date));
+  if (detail === 'second') result = adapter.setSeconds(result, adapter.getSeconds(date));
+  return result;
 }
 
-export type ComposeResult =
+export type ComposeResult<T> =
   | { status: 'empty' }
   | { status: 'partial' }
   | { status: 'invalid' }
-  | { status: 'valid'; date: Date };
+  | { status: 'valid'; date: T };
 
-type ComposeOptions = {
+type ComposeOptions<T> = {
+  adapter: DateAdapter<T>;
   detail: InputDetail;
   fields: Fields;
-  max?: Date;
-  min?: Date;
+  max?: T;
+  min?: T;
   present: ReadonlySet<SegmentName>;
   use12Hours: boolean;
 };
 
-/**
- * Builds a Date from field values. Fields excluded from the format fall back to
- * the current year, January, the 1st, and 00:00:00.
- */
-export function composeDate({
+export function composeDate<T>({
+  adapter,
   detail,
   fields,
   max,
   min,
   present,
   use12Hours,
-}: ComposeOptions): ComposeResult {
+}: ComposeOptions<T>): ComposeResult<T> {
   const names = [...new Set([...present].map((segment) => fieldBySegment[segment]))];
   const filled = names.filter((name) => fields[name] !== '');
-
-  if (filled.length === 0) {
-    return { status: 'empty' };
-  }
-
-  if (filled.length < names.length) {
-    return { status: 'partial' };
-  }
+  if (filled.length === 0) return { status: 'empty' };
+  if (filled.length < names.length) return { status: 'partial' };
 
   const hasHour = present.has('hour12') || present.has('hour24');
-  const year = present.has('year') ? Number(fields.year) : new Date().getFullYear();
+  const today = adapter.date();
+  const year = present.has('year') ? Number(fields.year) : adapter.getYear(today);
   const month = present.has('month') ? Number(fields.month) - 1 : 0;
   const day = present.has('day') ? Number(fields.day) : 1;
   let hour = hasHour ? Number(fields.hour) : 0;
   const minute = present.has('minute') ? Number(fields.minute) : 0;
   const second = present.has('second') ? Number(fields.second) : 0;
-
-  const numbers = [year, month, day, hour, minute, second];
-
-  if (numbers.some((value) => !Number.isInteger(value))) {
+  if ([year, month, day, hour, minute, second].some((value) => !Number.isInteger(value)))
     return { status: 'invalid' };
-  }
 
   if (use12Hours) {
-    if (hour < 1 || hour > 12) {
-      return { status: 'invalid' };
-    }
-
+    if (hour < 1 || hour > 12) return { status: 'invalid' };
     hour = (hour % 12) + (fields.amPm === 'pm' ? 12 : 0);
-  } else if (hour < 0 || hour > 23) {
-    return { status: 'invalid' };
-  }
+  } else if (hour < 0 || hour > 23) return { status: 'invalid' };
+  if (year < 1 || month < 0 || month > 11 || day < 1 || day > 31) return { status: 'invalid' };
+  if (minute < 0 || minute > 59 || second < 0 || second > 59) return { status: 'invalid' };
 
-  if (year < 1 || month < 0 || month > 11 || day < 1 || day > 31) {
-    return { status: 'invalid' };
-  }
-
-  if (minute < 0 || minute > 59 || second < 0 || second > 59) {
-    return { status: 'invalid' };
-  }
-
-  const date = new Date(0);
-  date.setFullYear(year, month, day);
-  date.setHours(hour, minute, second, 0);
-
-  if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) {
-    return { status: 'invalid' };
-  }
-
-  const floored = floorTo(date, detail).getTime();
-
+  let date = adapter.setYear(today, year);
+  date = adapter.setMonth(date, month);
+  date = adapter.setDate(date, day);
+  date = adapter.setHours(date, hour);
+  date = adapter.setMinutes(date, minute);
+  date = adapter.setSeconds(date, second);
+  date = adapter.setMilliseconds(date, 0);
   if (
-    (min && floored < floorTo(min, detail).getTime()) ||
-    (max && floored > floorTo(max, detail).getTime())
-  ) {
+    adapter.getYear(date) !== year ||
+    adapter.getMonth(date) !== month ||
+    adapter.getDate(date) !== day ||
+    !adapter.isValid(date)
+  )
     return { status: 'invalid' };
-  }
 
+  const floored = floorTo(adapter, date, detail);
+  if (
+    (min && adapter.isBefore(floored, floorTo(adapter, min, detail))) ||
+    (max && adapter.isAfter(floored, floorTo(adapter, max, detail)))
+  )
+    return { status: 'invalid' };
   return { date, status: 'valid' };
 }
 
@@ -160,86 +137,58 @@ export function parseTime(
   value: string,
 ): { hours: number; minutes: number; seconds: number } | null {
   const match = /^(\d{1,2}):(\d{2})(?::(\d{2}))?/.exec(value);
-
-  if (!match) {
-    return null;
-  }
-
-  return {
-    hours: Number(match[1]),
-    minutes: Number(match[2]),
-    seconds: Number(match[3] ?? 0),
-  };
+  return match
+    ? { hours: Number(match[1]), minutes: Number(match[2]), seconds: Number(match[3] ?? 0) }
+    : null;
 }
 
-export function formatTime(date: Date, detail: InputDetail): string {
-  const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-
-  return detail === 'second' ? `${time}:${pad(date.getSeconds())}` : time;
+export function formatTime<T>(adapter: DateAdapter<T>, date: T, detail: InputDetail): string {
+  const time = `${pad(adapter.getHours(date))}:${pad(adapter.getMinutes(date))}`;
+  return detail === 'second' ? `${time}:${pad(adapter.getSeconds(date))}` : time;
 }
 
-/**
- * Converts a loose value to a Date. For the `time` kind, `"HH:mm[:ss]"` strings are
- * accepted and resolved against today's date.
- */
-export function valueToDate(value: LooseValuePiece | undefined, kind: InputKind): Date | null {
-  if (value === null || value === undefined || value === '') {
-    return null;
-  }
-
+export function valueToDate<T>(
+  adapter: DateAdapter<T>,
+  value: LooseValuePiece<T> | undefined,
+  kind: InputKind,
+): T | null {
+  if (value === null || value === undefined || value === '') return null;
   if (kind === 'time' && typeof value === 'string') {
     const time = parseTime(value);
-
-    if (!time) {
-      return null;
-    }
-
-    const date = new Date();
-    date.setHours(time.hours, time.minutes, time.seconds, 0);
-
+    if (!time) return null;
+    let date = adapter.date();
+    date = adapter.setHours(date, time.hours);
+    date = adapter.setMinutes(date, time.minutes);
+    date = adapter.setSeconds(date, time.seconds);
     return date;
   }
-
-  const date = value instanceof Date ? value : new Date(value);
-
-  return Number.isNaN(date.getTime()) ? null : date;
+  const date = typeof value === 'string' ? adapter.date(value) : value;
+  return adapter.isValid(date) ? date : null;
 }
 
-export function toNativeValue(date: Date, kind: InputKind, detail: InputDetail): string {
+export function toNativeValue<T>(
+  adapter: DateAdapter<T>,
+  date: T,
+  kind: InputKind,
+  detail: InputDetail,
+): string {
+  const utils = createDateUtils(adapter);
   switch (kind) {
     case 'date':
-      return getISOLocalDate(date);
+      return utils.getISOLocalDate(date);
     case 'time':
-      return formatTime(date, detail);
+      return formatTime(adapter, date, detail);
     case 'datetime':
-      return getISOLocalDateTime(date).slice(0, detail === 'second' ? 19 : 16);
+      return utils.getISOLocalDateTime(date).slice(0, detail === 'second' ? 19 : 16);
   }
 }
 
-export function fromNativeValue(value: string, kind: InputKind): Date | null {
-  if (!value) {
-    return null;
-  }
-
-  if (kind === 'time') {
-    return valueToDate(value, 'time');
-  }
-
-  if (kind === 'date') {
-    const [year, month, day] = value.split('-').map(Number);
-
-    if (!year || !month || !day) {
-      return null;
-    }
-
-    const date = new Date(0);
-    date.setFullYear(year, month - 1, day);
-    date.setHours(0, 0, 0, 0);
-
-    return date;
-  }
-
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime()) ? null : date;
+export function fromNativeValue<T>(
+  adapter: DateAdapter<T>,
+  value: string,
+  kind: InputKind,
+): T | null {
+  if (!value) return null;
+  const date = kind === 'time' ? valueToDate(adapter, value, 'time') : adapter.date(value);
+  return date && adapter.isValid(date) ? date : null;
 }

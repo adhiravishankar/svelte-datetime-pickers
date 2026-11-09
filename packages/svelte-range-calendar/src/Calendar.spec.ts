@@ -3,6 +3,7 @@ import { userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-svelte';
 
 import Calendar from './Calendar.svelte';
+import { AdapterDate } from 'svelte-date-utils';
 
 function getDayTiles(container: Element) {
   return [
@@ -20,7 +21,7 @@ function findTile(container: Element, label: string, includeNeighbors = false) {
 }
 
 describe('Calendar', () => {
-  const baseProps = { locale: 'en-US', value: new Date(2017, 0, 15) };
+  const baseProps = { adapter: new AdapterDate(), locale: 'en-US', value: new Date(2017, 0, 15) };
 
   it('renders the month of the value with navigation label', async () => {
     const { container } = await render(Calendar, baseProps);
@@ -36,7 +37,7 @@ describe('Calendar', () => {
     const usWeekday = us.container.querySelector('.svelte-calendar__month-view__weekdays__weekday');
     expect(usWeekday?.textContent?.trim()).toBe('Sun');
 
-    const fr = await render(Calendar, { locale: 'fr-FR', value: new Date(2017, 0, 15) });
+    const fr = await render(Calendar, { ...baseProps, locale: 'fr-FR' });
     const frWeekday = fr.container.querySelector('.svelte-calendar__month-view__weekdays__weekday');
     expect(frWeekday?.textContent?.trim().toLowerCase()).toContain('lun');
   });
@@ -75,6 +76,7 @@ describe('Calendar', () => {
 
   it('highlights a range value', async () => {
     const { container } = await render(Calendar, {
+      ...baseProps,
       locale: 'en-US',
       selectRange: true,
       value: [new Date(2017, 0, 10, 12), new Date(2017, 0, 12, 12)],

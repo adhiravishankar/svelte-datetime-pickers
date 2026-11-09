@@ -1,9 +1,12 @@
-<script lang="ts">
+<script lang="ts" generics="T">
   import './Clock.css';
+  import type { DateAdapter } from 'svelte-date-utils';
 
   import type { ClassValue } from 'svelte/elements';
 
-  type ClockProps = {
+  type ClockProps<T> = {
+    /** Date adapter used to parse time values. Required. */
+    adapter: DateAdapter<T>;
     /**
      * Class name(s) that will be added along with `"svelte-clock"` to the main `<time>` element.
      */
@@ -144,10 +147,11 @@
      * @example new Date()
      * @example '22:15:00'
      */
-    value?: Date | string | null;
+    value?: T | string | null;
   };
 
   let {
+    adapter,
     class: className,
     formatHour = (locale, hour) => new Intl.NumberFormat(locale).format(hour),
     hourHandLength = 50,
@@ -172,25 +176,27 @@
     size = 150,
     useMillisecondPrecision = false,
     value,
-  }: ClockProps = $props();
+  }: ClockProps<T> = $props();
+
+  if (!adapter) throw new Error('Clock requires a date adapter.');
 
   const hourMarks = Array.from({ length: 12 }, (_, index) => index);
   const minuteMarks = Array.from({ length: 60 }, (_, index) => index).filter(
     (index) => index % 5 !== 0,
   );
 
-  let now = $state(new Date());
+  let now = $state(adapter.date());
 
   $effect(() => {
     if (value !== undefined) {
       return;
     }
 
-    now = new Date();
+    now = adapter.date();
 
     if (useMillisecondPrecision) {
       let frame = requestAnimationFrame(function tick() {
-        now = new Date();
+        now = adapter.date();
         frame = requestAnimationFrame(tick);
       });
 
@@ -198,33 +204,28 @@
     }
 
     const interval = setInterval(() => {
-      now = new Date();
+      now = adapter.date();
     }, 1000);
 
     return () => clearInterval(interval);
   });
 
-  function parseTime(input: Date | string): Date | null {
-    if (input instanceof Date) {
-      return Number.isNaN(input.getTime()) ? null : input;
-    }
-
+  function parseTime(input: T | string): T | null {
+    if (typeof input !== 'string') return adapter.isValid(input) ? input : null;
     // Time-only strings, e.g. "22:15" or "22:15:30"
     const match = /^(\d{1,2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?$/.exec(input);
 
     if (match) {
-      const date = new Date();
-      date.setHours(
-        Number(match[1]),
-        Number(match[2]),
-        Number(match[3] ?? 0),
-        Number((match[4] ?? '0').padEnd(3, '0').slice(0, 3)),
-      );
+      let date = adapter.date();
+      date = adapter.setHours(date, Number(match[1]));
+      date = adapter.setMinutes(date, Number(match[2]));
+      date = adapter.setSeconds(date, Number(match[3] ?? 0));
+      date = adapter.setMilliseconds(date, Number((match[4] ?? '0').padEnd(3, '0').slice(0, 3)));
       return date;
     }
 
-    const date = new Date(input);
-    return Number.isNaN(date.getTime()) ? null : date;
+    const date = adapter.date(input);
+    return adapter.isValid(date) ? date : null;
   }
 
   const date = $derived(value === undefined ? now : value === null ? null : parseTime(value));
@@ -234,10 +235,10 @@
       return null;
     }
 
-    const hours = date.getHours() % 12;
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-    const milliseconds = useMillisecondPrecision ? date.getMilliseconds() : 0;
+    const hours = adapter.getHours(date) % 12;
+    const minutes = adapter.getMinutes(date);
+    const seconds = adapter.getSeconds(date);
+    const milliseconds = useMillisecondPrecision ? adapter.getMilliseconds(date) : 0;
 
     return {
       hour: hours * 30 + minutes * 0.5 + seconds / 120,
@@ -246,7 +247,7 @@
     };
   });
 
-  const datetime = $derived(date ? date.toISOString() : undefined);
+  const datetime = $derived(date ? adapter.toJsDate(date).toISOString() : undefined);
 </script>
 
 {#snippet hand(

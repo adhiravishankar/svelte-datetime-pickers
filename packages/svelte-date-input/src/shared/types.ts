@@ -16,4 +16,4 @@ export type TimeDetail = 'hour' | 'minute' | 'second';
 
 export type InputDetail = DateDetail | TimeDetail;
 
-export type LooseValuePiece = string | Date | null;
+export type LooseValuePiece<T = Date> = string | T | null;
