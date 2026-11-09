@@ -1,6 +1,7 @@
 <script lang="ts" generics="T">
   import { getUserLocale } from 'svelte-date-utils';
   import type { DateAdapter } from 'svelte-date-utils';
+  import { getDateAdapter } from 'svelte-date-utils/svelte';
   import { onMount, untrack } from 'svelte';
 
   import Divider from './Divider.svelte';
@@ -27,8 +28,6 @@
   import type { InputDetail, InputKind, LooseValuePiece, SegmentName } from './shared/types.js';
 
   type SegmentedInputProps<T> = {
-    /** Date adapter used for parsing and manipulating values. Required. */
-    adapter: DateAdapter<T>;
     /** `aria-label` for the AM/PM select. */
     amPmAriaLabel?: string;
     /** Automatically focuses the first field on mount. */
@@ -80,7 +79,6 @@
   };
 
   let {
-    adapter,
     amPmAriaLabel,
     autoFocus,
     className = '',
@@ -113,9 +111,7 @@
     yearPlaceholder = '----',
   }: SegmentedInputProps<T> = $props();
 
-  untrack(() => {
-    if (!adapter) throw new Error('SegmentedInput requires a date adapter.');
-  });
+  const adapter = getDateAdapter<T>('SegmentedInput');
 
   let root = $state<HTMLDivElement>();
 

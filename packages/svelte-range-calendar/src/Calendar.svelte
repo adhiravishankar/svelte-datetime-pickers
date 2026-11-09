@@ -2,7 +2,7 @@
   import './Calendar.css';
 
   import { createDateUtils, getUserLocale } from 'svelte-date-utils';
-  import type { DateAdapter } from 'svelte-date-utils';
+  import { getDateAdapter } from 'svelte-date-utils/svelte';
   import { untrack } from 'svelte';
 
   import Navigation from './Navigation.svelte';
@@ -51,8 +51,6 @@
   } from './shared/types.js';
 
   type CalendarProps<T> = {
-    /** Date adapter used to parse, compare, format and navigate date values. Required. */
-    adapter: DateAdapter<T>;
     /**
      * The beginning of the period that shall be displayed. Can be bound.
      */
@@ -226,7 +224,6 @@
   };
 
   let {
-    adapter,
     activeStartDate = $bindable(),
     allowPartialRange = false,
     calendarType,
@@ -281,9 +278,7 @@
     view = $bindable(),
   }: CalendarProps<T> = $props();
 
-  untrack(() => {
-    if (!adapter) throw new Error('Calendar requires a date adapter.');
-  });
+  const adapter = getDateAdapter<T>('Calendar');
 
   const dateUtils = $derived(createDateUtils(adapter));
   const getBegin = (type: DateType, date: T) => getDateBegin(adapter, type, date);

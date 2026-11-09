@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
 import { page, userEvent } from 'vite-plus/test/browser';
-import { render } from 'vitest-browser-svelte';
+import { render as testRender } from 'vitest-browser-svelte';
+import DateAdapterContext from '../../../test/DateAdapterContext.svelte';
 import { createRawSnippet } from 'svelte';
 
 import DateTimeRangePicker from './DateTimeRangePicker.svelte';
@@ -40,8 +41,12 @@ function textSnippet(html: string) {
 }
 
 describe('DateTimeRangePicker', () => {
+  const render = (component: Parameters<typeof testRender>[0], props: object) =>
+    testRender(component, props, {
+      wrapper: DateAdapterContext,
+      wrapperProps: { adapter: new AdapterDate() },
+    });
   const defaultProps = {
-    adapter: new AdapterDate(),
     amPmAriaLabel: 'amPm',
     dayAriaLabel: 'day',
     hourAriaLabel: 'hour',

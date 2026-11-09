@@ -1,13 +1,11 @@
 <script lang="ts" generics="T">
   import './Clock.css';
   import { untrack } from 'svelte';
-  import type { DateAdapter } from 'svelte-date-utils';
+  import { getDateAdapter } from 'svelte-date-utils/svelte';
 
   import type { ClassValue } from 'svelte/elements';
 
   type ClockProps<T> = {
-    /** Date adapter used to parse time values. Required. */
-    adapter: DateAdapter<T>;
     /**
      * Class name(s) that will be added along with `"svelte-clock"` to the main `<time>` element.
      */
@@ -152,7 +150,6 @@
   };
 
   let {
-    adapter,
     class: className,
     formatHour = (locale, hour) => new Intl.NumberFormat(locale).format(hour),
     hourHandLength = 50,
@@ -179,9 +176,7 @@
     value,
   }: ClockProps<T> = $props();
 
-  untrack(() => {
-    if (!adapter) throw new Error('Clock requires a date adapter.');
-  });
+  const adapter = getDateAdapter<T>('Clock');
 
   const hourMarks = Array.from({ length: 12 }, (_, index) => index);
   const minuteMarks = Array.from({ length: 60 }, (_, index) => index).filter(

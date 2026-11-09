@@ -6,7 +6,7 @@
   import { DateTimeInput } from 'svelte-datetime-input';
   import { fit, portal } from 'svelte-fit-action';
   import { Calendar } from 'svelte-range-calendar';
-  import type { DateAdapter } from 'svelte-date-utils';
+  import { getDateAdapter } from 'svelte-date-utils/svelte';
 
   import type { ComponentProps, Snippet } from 'svelte';
   import type { ClassValue, HTMLAttributes } from 'svelte/elements';
@@ -16,13 +16,11 @@
   const outsideActionEvents = ['mousedown', 'focusin', 'touchstart'] as const;
   const allViews = ['hour', 'minute', 'second'] as const;
 
-  type CalendarProps<T> = Omit<ComponentProps<typeof Calendar>, 'adapter' | 'onChange' | 'selectRange' | 'value'>;
+  type CalendarProps<T> = Omit<ComponentProps<typeof Calendar>, 'onChange' | 'selectRange' | 'value'>;
 
-  type ClockProps<T> = Omit<ComponentProps<typeof Clock>, 'adapter' | 'value'>;
+  type ClockProps<T> = Omit<ComponentProps<typeof Clock>, 'value'>;
 
   type DateTimeRangePickerProps<T> = {
-    /** Date adapter used for all picker values and operations. Required. */
-    adapter: DateAdapter<T>;
     /** `aria-label` for the AM/PM select input. */
     amPmAriaLabel?: string;
     /** Automatically focuses the input on mount. */
@@ -229,7 +227,6 @@
   } & Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'onchange' | 'onfocus'>;
 
   let {
-    adapter,
     amPmAriaLabel,
     autoFocus,
     calendarAriaLabel,
@@ -283,9 +280,7 @@
     ...otherProps
   }: DateTimeRangePickerProps<T> = $props();
 
-  untrack(() => {
-    if (!adapter) throw new Error('DateTimeRangePicker requires a date adapter.');
-  });
+  const adapter = getDateAdapter<T>('DateTimeRangePicker');
 
   let isCalendarOpen = $state<boolean | null>(untrack(() => isCalendarOpenProps));
   let isClockOpen = $state<boolean | null>(untrack(() => isClockOpenProps));
@@ -492,7 +487,6 @@
   });
 
   const commonInputProps = $derived({
-    adapter,
     amPmAriaLabel,
     className: `${baseClassName}__inputGroup`,
     customInputsForm,
@@ -558,11 +552,10 @@
 
 {#snippet calendar()}
   <Calendar
-    {adapter}
     {locale}
     {maxDate}
     {minDate}
-    onChange={(nextValue) => onDateChange(nextValue)}
+    onChange={(nextValue) => onDateChange(nextValue as Value<T>)}
     selectRange
     {value}
     {...calendarProps}
@@ -571,7 +564,6 @@
 
 {#snippet clock()}
   <Clock
-    {adapter}
     {locale}
     renderMinuteHand={maxDetailIndex > 0}
     renderSecondHand={maxDetailIndex > 1}

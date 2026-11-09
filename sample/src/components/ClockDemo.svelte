@@ -1,8 +1,10 @@
 <script lang="ts">
   import Clock from 'svelte-analog-clock';
   import { AdapterDate } from 'svelte-date-utils';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
 
   const adapter = new AdapterDate();
+  provideDateAdapter(adapter);
   let value = $state(new Date());
 
   $effect(() => {
@@ -13,5 +15,5 @@
 
 <section class="Sample__section">
   <h2>svelte-analog-clock</h2>
-  <Clock {adapter} renderNumbers renderSecondHand size={200} {value} />
+  <Clock renderNumbers renderSecondHand size={200} {value} />
 </section>
