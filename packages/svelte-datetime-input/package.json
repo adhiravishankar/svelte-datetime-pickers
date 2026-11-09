@@ -1,6 +1,6 @@
 {
   "name": "svelte-datetime-input",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Segmented datetime input fields for your Svelte app.",
   "keywords": [
     "date",
@@ -51,7 +51,7 @@
     "watch": "svelte-package --input src --output dist --watch"
   },
   "dependencies": {
-    "svelte-date-input": "^0.3.0"
+    "svelte-date-input": "^0.4.0"
   },
   "devDependencies": {
     "@sveltejs/package": "^3.0.1",

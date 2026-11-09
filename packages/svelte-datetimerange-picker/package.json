@@ -1,6 +1,6 @@
 {
   "name": "svelte-datetimerange-picker",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A datetime range picker for your Svelte app.",
   "keywords": [
     "calendar",
@@ -55,10 +55,10 @@
     "watch": "svelte-package --input src --output dist --watch"
   },
   "dependencies": {
-    "svelte-analog-clock": "^0.3.0",
-    "svelte-datetime-input": "^0.3.0",
-    "svelte-fit-action": "^0.3.0",
-    "svelte-range-calendar": "^0.3.0"
+    "svelte-analog-clock": "^0.4.0",
+    "svelte-datetime-input": "^0.4.0",
+    "svelte-fit-action": "^0.4.0",
+    "svelte-range-calendar": "^0.4.0"
   },
   "devDependencies": {
     "@sveltejs/package": "^3.0.1",

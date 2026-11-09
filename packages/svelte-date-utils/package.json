@@ -1,7 +1,7 @@
 {
   "name": "svelte-date-utils",
-  "version": "0.3.0",
-  "description": "Date helpers for calendars and date inputs (start, end, previous, next and range of a century, decade, year, month and day) that work on native Date, date-fns or Luxon through adapters.",
+  "version": "0.4.0",
+  "description": "Date helpers for calendars and date inputs (start, end, previous, next and range of a century, decade, year, month and day) with native Date, date-fns, Luxon and @internationalized/date adapters.",
   "keywords": [
     "date",
     "date-fns",
@@ -34,6 +34,10 @@
     "./luxon": {
       "types": "./dist/luxon.d.ts",
       "default": "./dist/luxon.js"
+    },
+    "./internationalized": {
+      "types": "./dist/internationalized.d.ts",
+      "default": "./dist/internationalized.js"
     }
   },
   "publishConfig": {
@@ -52,6 +56,7 @@
     "watch": "tsc -p tsconfig.build.json --watch"
   },
   "devDependencies": {
+    "@internationalized/date": "^3.12.4",
     "@types/luxon": "^3.7.1",
     "@vitest/browser-playwright": "5.0.5",
     "date-fns": "^4.1.0",
@@ -63,10 +68,14 @@
     "vitest": "5.0.5"
   },
   "peerDependencies": {
+    "@internationalized/date": "^3.12.4",
     "date-fns": "^3.2.0 || ^4.0.0",
     "luxon": "^3.0.2"
   },
   "peerDependenciesMeta": {
+    "@internationalized/date": {
+      "optional": true
+    },
     "date-fns": {
       "optional": true
     },
