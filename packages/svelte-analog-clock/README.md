@@ -5,7 +5,7 @@ An analog clock for your Svelte 5 app. Svelte port of [React-Clock](https://gith
 ## Installation
 
 ```sh
-npm install svelte-analog-clock
+npm install svelte-analog-clock svelte-date-utils
 ```
 
 Requires Svelte 5 or later.
@@ -15,10 +15,16 @@ Requires Svelte 5 or later.
 ```svelte
 <script lang="ts">
   import Clock from 'svelte-analog-clock';
+  import { AdapterDate } from 'svelte-date-utils';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+
+  provideDateAdapter(new AdapterDate());
 </script>
 
 <Clock value={new Date()} />
 ```
+
+Install `svelte-date-utils` alongside the clock. Its adapter is required and comes from Svelte context. Call `provideDateAdapter(adapter)` in this component or an ancestor before rendering `Clock`; without it, the clock throws an error. The adapter determines the date object type accepted by `value`. `AdapterDate` uses native `Date`; date-fns, Luxon and `@internationalized/date` adapters are exported from `svelte-date-utils/date-fns`, `svelte-date-utils/luxon` and `svelte-date-utils/internationalized`.
 
 Styles are imported automatically. Elements use BEM class names starting with `svelte-clock`.
 

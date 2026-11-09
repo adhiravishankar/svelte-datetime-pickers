@@ -1,7 +1,7 @@
 <script lang="ts">
   import Calendar from 'svelte-range-calendar';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   const adapter = new AdapterDate();
   provideDateAdapter(adapter);

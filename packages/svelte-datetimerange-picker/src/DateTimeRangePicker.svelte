@@ -589,7 +589,8 @@
       {...commonInputProps}
       {autoFocus}
       name="{name}_from"
-      onChange={onChangeFrom}
+      onChange={(nextValue, shouldCloseWidgets) =>
+        onChangeFrom(nextValue as T | null, shouldCloseWidgets)}
       value={valueFrom}
     />
     <span class="{baseClassName}__range-divider" data-testid="range-divider">
@@ -602,7 +603,8 @@
     <DateTimeInput
       {...commonInputProps}
       name="{name}_to"
-      onChange={onChangeTo}
+      onChange={(nextValue, shouldCloseWidgets) =>
+        onChangeTo(nextValue as T | null, shouldCloseWidgets)}
       value={valueTo}
     />
     {#if clearIcon !== null}

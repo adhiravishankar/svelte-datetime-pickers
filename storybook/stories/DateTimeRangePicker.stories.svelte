@@ -10,6 +10,13 @@
   const fixed = new Date(2024, 5, 15, 10, 10, 30);
 </script>
 
+<script lang="ts">
+  import { AdapterDate } from 'svelte-date-utils';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+
+  provideDateAdapter(new AdapterDate());
+</script>
+
 <Story name="Default" args={{ value: [new Date(2024, 5, 14), fixed] }} />
 <Story name="Empty" args={{}} />
 <Story name="Without calendar" args={{ value: [new Date(2024, 5, 14), fixed], disableCalendar: true }} />

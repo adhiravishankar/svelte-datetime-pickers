@@ -1,7 +1,7 @@
 <script lang="ts" generics="T">
   import './Clock.css';
   import { untrack } from 'svelte';
-  import { getDateAdapter } from 'svelte-date-utils/svelte';
+  import { getDateAdapter } from 'svelte-date-utils';
 
   import type { ClassValue } from 'svelte/elements';
 

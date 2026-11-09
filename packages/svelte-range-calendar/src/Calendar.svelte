@@ -540,7 +540,7 @@
       base,
       ...modifiers.map((m) => `${base}--${m}`),
     ];
-    const contains = (range: Range<T>, point: T) => isRangeWithinRange(range, [point, point]);
+    const contains = (range: Range<T>, point: T) => isRangeWithinRange([point, point], range);
 
     const now = adapter.date();
     if (isRangeWithinRange(tileRange, [now, now])) {
@@ -548,9 +548,9 @@
     }
 
     if (selection) {
-      if (isRangeWithinRange(selection, tileRange)) {
+      if (isRangeWithinRange(tileRange, selection)) {
         classes.push('svelte-calendar__tile--active');
-      } else if (isRangeWithinRange(tileRange, selection)) {
+      } else if (isRangeWithinRange(selection, tileRange)) {
         classes.push('svelte-calendar__tile--hasActive');
       }
 
@@ -558,7 +558,7 @@
         const isStart = contains(tileRange, selection[0]);
         const isEnd = contains(tileRange, selection[1]);
 
-        if (isRangeWithinRange(selection, tileRange)) {
+        if (isRangeWithinRange(tileRange, selection)) {
           classes.push('svelte-calendar__tile--range');
         }
         if (isStart) {

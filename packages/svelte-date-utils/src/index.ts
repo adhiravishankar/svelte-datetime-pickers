@@ -4,6 +4,7 @@ import { createDateUtils } from './createDateUtils.js';
 export { AdapterDate } from './AdapterDate.js';
 export type { AdapterDateOptions } from './AdapterDate.js';
 export { createDateUtils } from './createDateUtils.js';
+export { getDateAdapter, provideDateAdapter } from './context.js';
 export type { DateUtils, TimeLike, YearLike } from './createDateUtils.js';
 export type { DateAdapter } from './types.js';
 export { getUserLocale, getUserLocales } from './getUserLocale.js';

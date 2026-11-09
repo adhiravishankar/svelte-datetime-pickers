@@ -7,7 +7,7 @@ The component renders a native `<input type="date">` (hidden, used for form subm
 ## Installation
 
 ```sh
-npm install svelte-date-input
+npm install svelte-date-input svelte-date-utils
 ```
 
 Requires Svelte 5 or later.
@@ -17,12 +17,17 @@ Requires Svelte 5 or later.
 ```svelte
 <script lang="ts">
   import DateInput from 'svelte-date-input';
+  import { AdapterDate } from 'svelte-date-utils';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
 
+  provideDateAdapter(new AdapterDate());
   let value = $state<Date | null>(new Date());
 </script>
 
 <DateInput name="date" onChange={(nextValue) => (value = nextValue)} {value} />
 ```
+
+The adapter is required and comes from Svelte context. Call `provideDateAdapter(adapter)` in this component or an ancestor before rendering `DateInput`; without it, the input throws an error. The adapter determines the date object type accepted by `value` and returned by `onChange`. `AdapterDate` uses native `Date`; date-fns, Luxon and `@internationalized/date` adapters are exported from `svelte-date-utils/date-fns`, `svelte-date-utils/luxon` and `svelte-date-utils/internationalized`.
 
 ## Props
 

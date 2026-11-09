@@ -8,7 +8,7 @@ A datetime range picker for your Svelte 5 app.
 
 ## tl;dr
 
-- Install by executing `npm install svelte-datetimerange-picker`.
+- Install by executing `npm install svelte-datetimerange-picker svelte-date-utils`.
 - Import by adding `import DateTimeRangePicker from 'svelte-datetimerange-picker'`.
 - Use by adding `<DateTimeRangePicker />`. Use the `onChange` prop for getting new values.
 
@@ -29,23 +29,29 @@ Your project needs to use Svelte 5 or later. The picker relies on modern web tec
 
 ### Installation
 
-Add svelte-datetimerange-picker to your project by executing `npm install svelte-datetimerange-picker`.
+Add svelte-datetimerange-picker and its date adapter utilities to your project by executing `npm install svelte-datetimerange-picker svelte-date-utils`.
 
 ### Usage
 
 ```svelte
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
+  import { AdapterDate } from 'svelte-date-utils';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
 
   type ValuePiece = Date | null;
 
   type Value = ValuePiece | [ValuePiece, ValuePiece];
+
+  provideDateAdapter(new AdapterDate());
 
   let value = $state<Value>([new Date(), new Date()]);
 </script>
 
 <DateTimeRangePicker onChange={(nextValue) => (value = nextValue)} {value} />
 ```
+
+The adapter is required and is read from Svelte context. Call `provideDateAdapter(adapter)` in this component or an ancestor before rendering the picker. Without a provider, the picker throws an error. The selected adapter determines the date object type used by `value` and `onChange`; `AdapterDate` uses native `Date`. For date-fns, Luxon, or `@internationalized/date`, use the matching adapter exported by `svelte-date-utils/date-fns`, `svelte-date-utils/luxon`, or `svelte-date-utils/internationalized`.
 
 ### Styling
 

@@ -15,7 +15,7 @@ This is a Svelte port of [React-DateTimeRange-Picker](https://github.com/wojtekm
 | [`svelte-fit-action`](packages/svelte-fit-action)                     | [react-fit](https://github.com/wojtekmaj/react-fit)                                            | `fit` action keeping popups in the viewport, and `portal` action.                              |
 | [`svelte-date-utils`](packages/svelte-date-utils)                     | [@wojtekmaj/date-utils](https://github.com/wojtekmaj/date-utils)                               | Date helpers on native `Date`, date-fns, Luxon or `@internationalized/date`, through adapters. |
 
-`svelte-date-utils` keeps the API of `@wojtekmaj/date-utils` and adds `createDateUtils(adapter)`. It includes `AdapterDateFns`, `AdapterLuxon` and `AdapterInternationalizedDate`, available from `svelte-date-utils/date-fns`, `svelte-date-utils/luxon` and `svelte-date-utils/internationalized` respectively.
+`svelte-date-utils` keeps the API of `@wojtekmaj/date-utils` and adds `createDateUtils(adapter)`. It includes `AdapterDateFns`, `AdapterLuxon` and `AdapterInternationalizedDate`, available from `svelte-date-utils/date-fns`, `svelte-date-utils/luxon` and `svelte-date-utils/internationalized` respectively. Svelte date components get their adapter from context; provide it once in an ancestor component with `provideDateAdapter` from `svelte-date-utils/svelte`. If no adapter is provided, a date component throws an error.
 
 To use the `@internationalized/date` adapter, install that optional peer dependency:
 
@@ -34,6 +34,22 @@ const monthStart = dateUtils.getMonthStart(parseDate('2026-11-08'));
 
 The adapter works with `CalendarDate`, `CalendarDateTime` and `ZonedDateTime` values. Set `locale` to control locale-based week rules; `weekStartsOn` can override the first day of the week.
 
+The Svelte components emit and accept the values used by the adapter: native `Date` with `AdapterDate`, `Date` with `AdapterDateFns`, Luxon `DateTime` with `AdapterLuxon`, and `CalendarDate`, `CalendarDateTime` or `ZonedDateTime` with `AdapterInternationalizedDate`. For example, configure a date-fns adapter in a parent component, then render the picker beneath it:
+
+```svelte
+<script lang="ts">
+  import DateTimeRangePicker from 'svelte-datetimerange-picker';
+  import { AdapterDateFns } from 'svelte-date-utils/date-fns';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+
+  provideDateAdapter(new AdapterDateFns());
+
+  let value = $state<[Date | null, Date | null]>([null, null]);
+</script>
+
+<DateTimeRangePicker {value} onChange={(nextValue) => (value = nextValue)} />
+```
+
 `make-event-props` and `clsx` are not needed: Svelte spreads rest props (including event handlers) onto elements and accepts arrays and objects in `class`.
 
 ## Install and usage
@@ -45,10 +61,14 @@ npm install svelte-datetimerange-picker
 ```svelte
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
+  import { AdapterDate } from 'svelte-date-utils';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
 
   type ValuePiece = Date | null;
 
   type Value = ValuePiece | [ValuePiece, ValuePiece];
+
+  provideDateAdapter(new AdapterDate());
 
   let value = $state<Value>([new Date(), new Date()]);
 </script>

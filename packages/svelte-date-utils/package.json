@@ -1,6 +1,6 @@
 {
   "name": "svelte-date-utils",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Date helpers for calendars and date inputs (start, end, previous, next and range of a century, decade, year, month and day) with native Date, date-fns, Luxon and @internationalized/date adapters.",
   "keywords": [
     "date",

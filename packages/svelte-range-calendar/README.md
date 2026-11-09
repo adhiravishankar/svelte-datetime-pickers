@@ -5,7 +5,7 @@ A calendar for your Svelte 5 app, with century, decade, year and month views and
 ## Installation
 
 ```sh
-npm install svelte-range-calendar
+npm install svelte-range-calendar svelte-date-utils
 ```
 
 Requires Svelte 5 or later.
@@ -15,12 +15,17 @@ Requires Svelte 5 or later.
 ```svelte
 <script lang="ts">
   import Calendar from 'svelte-range-calendar';
+  import { AdapterDate } from 'svelte-date-utils';
+  import { provideDateAdapter } from 'svelte-date-utils/svelte';
 
+  provideDateAdapter(new AdapterDate());
   let value = $state<Date | [Date | null, Date | null] | null>(new Date());
 </script>
 
 <Calendar onChange={(nextValue) => (value = nextValue)} selectRange {value} />
 ```
+
+The adapter is required and comes from Svelte context. Call `provideDateAdapter(adapter)` in this component or an ancestor before rendering `Calendar`; without it, the calendar throws an error. The adapter determines the date object type accepted by `value` and returned by `onChange`. `AdapterDate` uses native `Date`; date-fns, Luxon and `@internationalized/date` adapters are exported from `svelte-date-utils/date-fns`, `svelte-date-utils/luxon` and `svelte-date-utils/internationalized`.
 
 Styles are imported automatically. Elements use BEM class names starting with `svelte-calendar`.
 

@@ -1,7 +1,7 @@
 <script lang="ts" generics="T">
   import { getUserLocale } from 'svelte-date-utils';
   import type { DateAdapter } from 'svelte-date-utils';
-  import { getDateAdapter } from 'svelte-date-utils/svelte';
+  import { getDateAdapter } from 'svelte-date-utils';
   import { onMount, untrack } from 'svelte';
 
   import Divider from './Divider.svelte';
