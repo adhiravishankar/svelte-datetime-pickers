@@ -1,7 +1,7 @@
 <script lang="ts">
   import TimeInput from 'svelte-time-input';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   const adapter = new AdapterDate();
   provideDateAdapter(adapter);

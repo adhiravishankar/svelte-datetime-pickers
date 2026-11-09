@@ -1,7 +1,7 @@
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   import LocaleOptions from './LocaleOptions.svelte';
   import MaxDetailOptions from './MaxDetailOptions.svelte';

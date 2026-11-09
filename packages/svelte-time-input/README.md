@@ -16,7 +16,7 @@ Requires Svelte 5 or later. It installs `svelte-date-input` as a dependency.
 <script lang="ts">
   import TimeInput from 'svelte-time-input';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   provideDateAdapter(new AdapterDate());
   let value = $state<string | null>('22:15');

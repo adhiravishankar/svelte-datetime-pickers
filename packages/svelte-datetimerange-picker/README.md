@@ -37,7 +37,7 @@ Add svelte-datetimerange-picker and its date adapter utilities to your project b
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   type ValuePiece = Date | null;
 

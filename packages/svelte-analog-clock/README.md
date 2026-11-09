@@ -16,7 +16,7 @@ Requires Svelte 5 or later.
 <script lang="ts">
   import Clock from 'svelte-analog-clock';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   provideDateAdapter(new AdapterDate());
 </script>

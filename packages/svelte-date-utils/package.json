@@ -1,10 +1,11 @@
 {
   "name": "svelte-date-utils",
   "version": "0.5.0",
-  "description": "Date helpers for calendars and date inputs (start, end, previous, next and range of a century, decade, year, month and day) with native Date, date-fns, Luxon and @internationalized/date adapters.",
+  "description": "Date helpers for calendars and date inputs (start, end, previous, next and range of a century, decade, year, month and day) with native Date, date-fns, Day.js, Luxon and @internationalized/date adapters.",
   "keywords": [
     "date",
     "date-fns",
+    "dayjs",
     "luxon",
     "svelte",
     "utils"
@@ -31,6 +32,10 @@
       "types": "./dist/date-fns.d.ts",
       "default": "./dist/date-fns.js"
     },
+    "./dayjs": {
+      "types": "./dist/dayjs.d.ts",
+      "default": "./dist/dayjs.js"
+    },
     "./luxon": {
       "types": "./dist/luxon.d.ts",
       "default": "./dist/luxon.js"
@@ -38,10 +43,6 @@
     "./internationalized": {
       "types": "./dist/internationalized.d.ts",
       "default": "./dist/internationalized.js"
-    },
-    "./svelte": {
-      "types": "./dist/context.d.ts",
-      "default": "./dist/context.js"
     }
   },
   "publishConfig": {
@@ -64,6 +65,7 @@
     "@types/luxon": "^3.7.1",
     "@vitest/browser-playwright": "5.0.5",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.23",
     "luxon": "^3.7.2",
     "playwright": "^1.64.1",
     "svelte": "^5.0.0",
@@ -75,6 +77,7 @@
   "peerDependencies": {
     "@internationalized/date": "^3.12.4",
     "date-fns": "^3.2.0 || ^4.0.0",
+    "dayjs": "^1.11.23",
     "luxon": "^3.0.2",
     "svelte": "^5.0.0"
   },
@@ -86,6 +89,9 @@
       "optional": true
     },
     "luxon": {
+      "optional": true
+    },
+    "dayjs": {
       "optional": true
     },
     "svelte": {

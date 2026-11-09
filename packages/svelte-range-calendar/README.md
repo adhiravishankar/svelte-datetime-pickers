@@ -16,7 +16,7 @@ Requires Svelte 5 or later.
 <script lang="ts">
   import Calendar from 'svelte-range-calendar';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   provideDateAdapter(new AdapterDate());
   let value = $state<Date | [Date | null, Date | null] | null>(new Date());

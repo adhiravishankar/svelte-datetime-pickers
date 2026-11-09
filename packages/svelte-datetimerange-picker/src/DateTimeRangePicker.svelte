@@ -6,7 +6,7 @@
   import { DateTimeInput } from 'svelte-datetime-input';
   import { fit, portal } from 'svelte-fit-action';
   import { Calendar } from 'svelte-range-calendar';
-  import { getDateAdapter } from 'svelte-date-utils/svelte';
+  import { getDateAdapter } from 'svelte-date-utils';
 
   import type { ComponentProps, Snippet } from 'svelte';
   import type { ClassValue, HTMLAttributes } from 'svelte/elements';

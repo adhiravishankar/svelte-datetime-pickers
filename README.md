@@ -4,18 +4,36 @@ A datetime range picker for your Svelte 5 app, and the packages it is built from
 
 This is a Svelte port of [React-DateTimeRange-Picker](https://github.com/wojtekmaj/react-datetimerange-picker) and its internal dependencies. Every React dependency is replaced by a Svelte package in this monorepo:
 
-| Package                                                               | Replaces                                                                                       | Description                                                                                    |
-| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [`svelte-datetimerange-picker`](packages/svelte-datetimerange-picker) | [react-datetimerange-picker](https://github.com/wojtekmaj/react-datetimerange-picker)          | The datetime range picker.                                                                     |
-| [`svelte-datetime-input`](packages/svelte-datetime-input)             | `DateTimeInput` of [react-datetime-picker](https://github.com/wojtekmaj/react-datetime-picker) | Segmented datetime input fields with a native `datetime-local` input.                          |
-| [`svelte-time-input`](packages/svelte-time-input)                     | `TimeInput` of [react-time-picker](https://github.com/wojtekmaj/react-time-picker)             | Segmented time input fields with a native `time` input.                                        |
-| [`svelte-date-input`](packages/svelte-date-input)                     | `DateInput` of [react-date-picker](https://github.com/wojtekmaj/react-date-picker)             | Segmented date input fields. Also hosts the engine shared by the other two.                    |
-| [`svelte-range-calendar`](packages/svelte-range-calendar)             | [react-calendar](https://github.com/wojtekmaj/react-calendar)                                  | Calendar with century, decade, year and month views and range selection.                       |
-| [`svelte-analog-clock`](packages/svelte-analog-clock)                 | [react-clock](https://github.com/wojtekmaj/react-clock)                                        | Analog clock.                                                                                  |
-| [`svelte-fit-action`](packages/svelte-fit-action)                     | [react-fit](https://github.com/wojtekmaj/react-fit)                                            | `fit` action keeping popups in the viewport, and `portal` action.                              |
-| [`svelte-date-utils`](packages/svelte-date-utils)                     | [@wojtekmaj/date-utils](https://github.com/wojtekmaj/date-utils)                               | Date helpers on native `Date`, date-fns, Luxon or `@internationalized/date`, through adapters. |
+| Package                                                               | Replaces                                                                                       | Description                                                                                            |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [`svelte-datetimerange-picker`](packages/svelte-datetimerange-picker) | [react-datetimerange-picker](https://github.com/wojtekmaj/react-datetimerange-picker)          | The datetime range picker.                                                                             |
+| [`svelte-datetime-input`](packages/svelte-datetime-input)             | `DateTimeInput` of [react-datetime-picker](https://github.com/wojtekmaj/react-datetime-picker) | Segmented datetime input fields with a native `datetime-local` input.                                  |
+| [`svelte-time-input`](packages/svelte-time-input)                     | `TimeInput` of [react-time-picker](https://github.com/wojtekmaj/react-time-picker)             | Segmented time input fields with a native `time` input.                                                |
+| [`svelte-date-input`](packages/svelte-date-input)                     | `DateInput` of [react-date-picker](https://github.com/wojtekmaj/react-date-picker)             | Segmented date input fields. Also hosts the engine shared by the other two.                            |
+| [`svelte-range-calendar`](packages/svelte-range-calendar)             | [react-calendar](https://github.com/wojtekmaj/react-calendar)                                  | Calendar with century, decade, year and month views and range selection.                               |
+| [`svelte-analog-clock`](packages/svelte-analog-clock)                 | [react-clock](https://github.com/wojtekmaj/react-clock)                                        | Analog clock.                                                                                          |
+| [`svelte-fit-action`](packages/svelte-fit-action)                     | [react-fit](https://github.com/wojtekmaj/react-fit)                                            | `fit` action keeping popups in the viewport, and `portal` action.                                      |
+| [`svelte-date-utils`](packages/svelte-date-utils)                     | [@wojtekmaj/date-utils](https://github.com/wojtekmaj/date-utils)                               | Date helpers on native `Date`, date-fns, Day.js, Luxon or `@internationalized/date`, through adapters. |
 
-`svelte-date-utils` keeps the API of `@wojtekmaj/date-utils` and adds `createDateUtils(adapter)`. It includes `AdapterDateFns`, `AdapterLuxon` and `AdapterInternationalizedDate`, available from `svelte-date-utils/date-fns`, `svelte-date-utils/luxon` and `svelte-date-utils/internationalized` respectively. Svelte date components get their adapter from context; provide it once in an ancestor component with `provideDateAdapter` from `svelte-date-utils/svelte`. If no adapter is provided, a date component throws an error.
+`svelte-date-utils` keeps the API of `@wojtekmaj/date-utils` and adds `createDateUtils(adapter)`. It includes `AdapterDateFns`, `AdapterDayjs`, `AdapterLuxon` and `AdapterInternationalizedDate`, available from `svelte-date-utils/date-fns`, `svelte-date-utils/dayjs`, `svelte-date-utils/luxon` and `svelte-date-utils/internationalized` respectively. Svelte date components get their adapter from context; provide it once in an ancestor component with `provideDateAdapter` from `svelte-date-utils`. If no adapter is provided, a date component throws an error.
+
+To use the Day.js adapter, install Day.js as an optional peer dependency:
+
+```sh
+npm install svelte-date-utils dayjs
+```
+
+```ts
+import dayjs from 'dayjs';
+import 'dayjs/locale/de';
+import { createDateUtils } from 'svelte-date-utils';
+import { AdapterDayjs } from 'svelte-date-utils/dayjs';
+
+const dateUtils = createDateUtils(new AdapterDayjs({ locale: 'de' }));
+const monthStart = dateUtils.getMonthStart(dayjs('2026-11-08'));
+```
+
+Day.js values are `Dayjs` objects. Import the Day.js locale you want to use before configuring the adapter; `weekStartsOn` can override that locale's first day of the week.
 
 To use the `@internationalized/date` adapter, install that optional peer dependency:
 
@@ -34,13 +52,13 @@ const monthStart = dateUtils.getMonthStart(parseDate('2026-11-08'));
 
 The adapter works with `CalendarDate`, `CalendarDateTime` and `ZonedDateTime` values. Set `locale` to control locale-based week rules; `weekStartsOn` can override the first day of the week.
 
-The Svelte components emit and accept the values used by the adapter: native `Date` with `AdapterDate`, `Date` with `AdapterDateFns`, Luxon `DateTime` with `AdapterLuxon`, and `CalendarDate`, `CalendarDateTime` or `ZonedDateTime` with `AdapterInternationalizedDate`. For example, configure a date-fns adapter in a parent component, then render the picker beneath it:
+The Svelte components emit and accept the values used by the adapter: native `Date` with `AdapterDate` or `AdapterDateFns`, Day.js `Dayjs` with `AdapterDayjs`, Luxon `DateTime` with `AdapterLuxon`, and `CalendarDate`, `CalendarDateTime` or `ZonedDateTime` with `AdapterInternationalizedDate`. For example, configure a date-fns adapter in a parent component, then render the picker beneath it:
 
 ```svelte
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
   import { AdapterDateFns } from 'svelte-date-utils/date-fns';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   provideDateAdapter(new AdapterDateFns());
 
@@ -62,7 +80,7 @@ npm install svelte-datetimerange-picker
 <script lang="ts">
   import DateTimeRangePicker from 'svelte-datetimerange-picker';
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   type ValuePiece = Date | null;
 

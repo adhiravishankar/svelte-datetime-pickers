@@ -12,7 +12,7 @@
 
 <script lang="ts">
   import { AdapterDate } from 'svelte-date-utils';
-  import { provideDateAdapter } from 'svelte-date-utils/svelte';
+  import { provideDateAdapter } from 'svelte-date-utils';
 
   provideDateAdapter(new AdapterDate());
 </script>

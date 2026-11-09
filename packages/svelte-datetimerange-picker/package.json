@@ -55,10 +55,10 @@
     "watch": "svelte-package --input src --output dist --watch"
   },
   "dependencies": {
-    "svelte-analog-clock": "^0.4.0",
-    "svelte-datetime-input": "^0.4.0",
-    "svelte-fit-action": "^0.4.0",
-    "svelte-range-calendar": "^0.4.0"
+    "svelte-analog-clock": "^0.5.0",
+    "svelte-datetime-input": "^0.5.0",
+    "svelte-fit-action": "^0.5.0",
+    "svelte-range-calendar": "^0.5.0"
   },
   "devDependencies": {
     "@sveltejs/package": "^3.0.1",

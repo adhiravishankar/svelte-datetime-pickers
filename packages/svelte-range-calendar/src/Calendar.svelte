@@ -2,7 +2,7 @@
   import './Calendar.css';
 
   import { createDateUtils, getUserLocale } from 'svelte-date-utils';
-  import { getDateAdapter } from 'svelte-date-utils/svelte';
+  import { getDateAdapter } from 'svelte-date-utils';
   import { untrack } from 'svelte';
 
   import Navigation from './Navigation.svelte';
